@@ -40,8 +40,6 @@
     "./simple-semaphore"                           :   "./simple-semaphore.mjs"                     ,
     "./ws.mjs"                                     :   "./ws.mjs"                                   ,
     "./ws"                                         :   "./ws.mjs"                                   ,
-    "./ws-reconnector.mjs"                         :   "./ws-reconnector.mjs"                       ,
-    "./ws-reconnector"                             :   "./ws-reconnector.mjs"                       ,
     "./ws-backend-callapi-context-factory.mjs"     :   "./ws-backend-callapi-context-factory.mjs"   ,
     "./ws-backend-callapi-context-factory"         :   "./ws-backend-callapi-context-factory.mjs"   ,
     "./ws-backend-respapi.mjs"                     :   "./ws-backend-respapi.mjs"                   ,
@@ -56,6 +54,8 @@
     "./ws-frontend-callapi-context-factory"        :   "./ws-frontend-callapi-context-factory.mjs"  ,
     "./ws-frontend-respapi.mjs"                    :   "./ws-frontend-respapi.mjs"                  ,
     "./ws-frontend-respapi"                        :   "./ws-frontend-respapi.mjs"                  ,
+    "./ws-frontend-tethering-context.mjs"          :   "./ws-frontend-tethering-context.mjs"        ,
+    "./ws-frontend-tethering-context"              :   "./ws-frontend-tethering-context.mjs"        ,
     "./ws-utils.mjs"                               :   "./ws-utils.mjs"                             ,
     "./ws-utils"                                   :   "./ws-utils.mjs"
   },

@@ -1,0 +1,19 @@
+{
+  "env": {
+  },
+  "async_context_websocket_backend" : {
+    "context_factory" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
+    "purge_require_cache" : false,
+    "static_paths":[],
+    "ports": [ 3000, 3632 ],
+    "path" : "/foo",
+    "cors_origins" : [
+      "http://schizostylis.local:3000",
+      "http://schizostylis.local:3632",
+      "http://localhost:3000",
+      "http://localhost:3000"
+    ],
+    "end": true
+  },
+  "end" : true
+}

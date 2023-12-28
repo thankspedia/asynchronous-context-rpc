@@ -1,0 +1,20 @@
+{
+  "name": "async-context-rpc-example-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type" : "module",
+  "exports": {
+    "." : "",
+    "ws-frontend-respapi-test-context-factory.js" : "ws-frontend-respapi-test-context-factory.js",
+    "ws-frontend-respapi-test.js" :                 "ws-frontend-respapi-test.js",
+    "ws-frontend-respapi-test-context-factory" :    "ws-frontend-respapi-test-context-factory.js",
+    "ws-frontend-respapi-test" :                    "ws-frontend-respapi-test.js"
+  },
+  "scripts": {
+    "start" : "SETTINGS='ws-frontend-respapi-test.settings.json' start-ws-service",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Atsushi Oka",
+  "license": "ISC"
+}
