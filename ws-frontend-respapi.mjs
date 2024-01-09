@@ -23,6 +23,7 @@ const t_respapi_message = schema.compile`
 export { t_respapi_message as t_respapi_message };
 
 
+
 async function handle_on_message_of_ws_frontend_respapi( nargs ) {
   console.log( 'handle_on_message_of_ws_frontend_respapi', nargs );
   {
@@ -83,6 +84,60 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
 export { handle_on_message_of_ws_frontend_respapi as handle_on_message_of_ws_frontend_respapi };
 
 
+export async function handle_event_of_ws_frontend( nargs ) {
+  const {
+    event_name         = ((name)=>{throw new Error(`${name} is not defined`)})('event_name'),
+    event_handler_name = ((name)=>{throw new Error(`${name} is not defined`)})('event_handler_name'),
+    context            = ((name)=>{throw new Error(`${name} is not defined`)})('context'),
+    websocket          = ((name)=>{throw new Error(`${name} is not defined`)})('websocket'),
+  } = nargs;
+
+  console.log('LOG','handle_event_of_ws_frontend');
+
+  /*
+   * Call the specified event handler on the context object.
+   */
+  const respapi_result  =
+    await respapi(
+      /* callapi_target */
+      context,
+
+      /* callapi_method_path */
+      // message.command_value.method_path,
+      [event_handler_name],
+
+      /* http-method as TAGS */
+      'WEBSOCKET_EVENT_HANDLER',
+
+      /* on_execution */
+      async ( resolved_callapi_method )=>{
+        /*
+         * Invoking the Resolved Method
+         */
+        const target_method      = resolved_callapi_method.value;
+        const target_method_args = [{websocket,event_name}]; // message.command_value.method_args;
+        return await (context.executeTransaction( target_method, ... target_method_args ));
+      },
+    );
+
+  console.log( 'handle_event_of_ws_frontend : %s', respapi_result );
+};
+
+
+
+export const ws_frontend_respapi_handlers = {
+  on_message : (message)=>{
+    return handle_on_message_of_ws_frontend_respapi({
+      context,
+      websocket,
+      message,
+    });
+  },
+  on_error : (...args)=>{
+    console.error( ...args );
+  },
+};
+
 
 /*
  * See :
@@ -92,16 +147,8 @@ export { handle_on_message_of_ws_frontend_respapi as handle_on_message_of_ws_fro
  */
 
 function on_init_websocket_of_ws_frontend_respapi( websocket, context ) {
-  websocket.addEventListener( 'message', (message)=>{
-    return handle_on_message_of_ws_frontend_respapi({
-      context,
-      websocket,
-      message,
-    });
-  });
-  websocket.addEventListener( 'error', (...args)=>{
-    console.error( ...args );
-  });
+  websocket.addEventListener( 'message', ws_frontend_respapi_handlers.on_message );
+  websocket.addEventListener( 'error',   ws_frontend_respapi_handlers.on_error );
 }
 export { on_init_websocket_of_ws_frontend_respapi as on_init_websocket_of_ws_frontend_respapi };
 
