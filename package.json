@@ -57,7 +57,11 @@
     "./ws-frontend-tethering-context.mjs"          :   "./ws-frontend-tethering-context.mjs"        ,
     "./ws-frontend-tethering-context"              :   "./ws-frontend-tethering-context.mjs"        ,
     "./ws-utils.mjs"                               :   "./ws-utils.mjs"                             ,
-    "./ws-utils"                                   :   "./ws-utils.mjs"
+    "./ws-utils"                                   :   "./ws-utils.mjs"                             ,
+    "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js" : "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
+    "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory"    : "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
+    "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test.js"                 : "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test.js",
+    "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test"                    : "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test.js"
   },
   "bin": {
     "start-http-middleware-service": "bin/start-http-middleware-service.mjs",

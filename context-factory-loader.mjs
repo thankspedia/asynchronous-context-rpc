@@ -23,8 +23,9 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
     throw new Error( `purge_require_cache is invalid : the specified value '${ purge_require_cache }' is '${typeof purge_require_cache }'` );
   }
 
+  let result = null;
   if ( purge_require_cache ) {
-    return (
+    result = (
       async function() {
         purgeRequireCache();
 
@@ -38,7 +39,7 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
       }
     );
   } else {
-    return (
+    result = (
       async function() {
         try {
           // purgeRequireCache();
@@ -52,5 +53,21 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
       }
     );
   }
+
+  // Check if the created loader works properly.
+  result()
+    .then(
+      e=>console.log(
+        `\n`+
+        `context_factory(${path_to_context_factory}) seems okay`
+      )
+    ).catch(
+      e=>console.error(
+        'loadContextFactory() initialization error :',
+        e,
+        `\n${'='.repeat(100)}\nNote that this error was reported asynchronously;`+
+        `the error was ignored and continued the process.\n${'='.repeat(100)}\n` )
+    );
+  return result;
 }
 
