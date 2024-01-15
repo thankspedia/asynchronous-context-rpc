@@ -84,7 +84,7 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
 export { handle_on_message_of_ws_frontend_respapi as handle_on_message_of_ws_frontend_respapi };
 
 
-export async function handle_event_of_ws_frontend( nargs ) {
+export async function handle_on_event_of_ws_frontend_respapi( nargs ) {
   const {
     event_name         = ((name)=>{throw new Error(`${name} is not defined`)})('event_name'),
     event_handler_name = ((name)=>{throw new Error(`${name} is not defined`)})('event_handler_name'),
@@ -92,7 +92,7 @@ export async function handle_event_of_ws_frontend( nargs ) {
     websocket          = ((name)=>{throw new Error(`${name} is not defined`)})('websocket'),
   } = nargs;
 
-  console.log('LOG','handle_event_of_ws_frontend');
+  console.log('LOG','handle_on_event_of_ws_frontend_respapi');
 
   /*
    * Call the specified event handler on the context object.
@@ -120,7 +120,7 @@ export async function handle_event_of_ws_frontend( nargs ) {
       },
     );
 
-  console.log( 'handle_event_of_ws_frontend : %s', respapi_result );
+  console.log( 'handle_on_event_of_ws_frontend_respapi : %s', respapi_result );
 };
 
 
@@ -152,4 +152,101 @@ function on_init_websocket_of_ws_frontend_respapi( websocket, context ) {
 }
 export { on_init_websocket_of_ws_frontend_respapi as on_init_websocket_of_ws_frontend_respapi };
 
+
+
+
+/*
+ *
+ */
+
+////
+
+export const tether_default_configs_of_ws_frontend_respapi = {
+  url :  null,
+  frontend_context_factory : null,
+  interval : 1000,
+  on_initialization : function() {
+    console.log( 'App', 'on_initialization' );
+    this.frontend_context = this.configs.frontend_context_factory.call(this);
+  },
+  on_finalization : function() {
+    console.log( 'App', 'on_finalization' );
+  },
+  on_open : async function () {
+    console.log( 'App', 'on_open' );
+    try {
+      console.log( 'WebSocket', 'opened' );
+
+      const { context:backend_context } =  await createContext({
+        websocket : this.current_websocket,
+        logger    : this.frontend_context.logger,
+      });
+
+      console.log( '[ws-reconnector] proc 2' , backend_context );
+
+      this.backend_context = backend_context;
+
+      console.log( '[ws-reconnector] proc 3' , this.frontend_context );
+
+      this.frontend_context.backend   = this.backend_context;
+      this.frontend_context.websocket = this.current_websocket;
+
+      try {
+        await handle_on_event_of_ws_frontend_respapi({
+          event_name         : 'open',
+          event_handler_name : 'on_open',
+          context            : this.frontend_context,
+          websocket          : this.current_websocket,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
+      // try {
+      //   on_init_websocket_of_ws_frontend_respapi( websocket, this.frontend_context );
+      // } catch (e) {
+      //   console.error(e);
+      // }
+    } catch ( e ){
+      console.error( 'ws-reconnector.proc() error' , e );
+    }
+  },
+
+  on_close : async function() {
+    console.log( 'App', 'on_close' );
+
+    try {
+      await handle_on_event_of_ws_frontend_respapi({
+        event_name         : 'close',
+        event_handler_name : 'on_close',
+        context            : this.frontend_context,
+        websocket          : this.current_websocket,
+      });
+    } catch ( e ) {
+      console.error('handle_on_event_of_ws_frontend_respapi on_close threw an error. ignored. ', e);
+    }
+
+    // this.websocket = null;
+    this.frontend_context.backend = null
+    this.frontend_context.websocket = null
+  },
+
+  on_message : async function( message ) {
+    console.log( 'App', 'on_message' );
+    return handle_on_message_of_ws_frontend_respapi({
+      context   : this.frontend_context,
+      websocket : this.current_websocket,
+      message,
+    });
+  },
+
+  on_error : function (...args) {
+    console.log( 'App', 'on_error' );
+    console.error( ...args );
+  },
+};
+
+export function create_tether_configs_of_ws_frontend_respapi(arg_configs) {
+  return Object.assign({}, tether_default_configs_of_ws_frontend_respapi, arg_configs );
+}
 

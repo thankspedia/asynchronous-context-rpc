@@ -14,7 +14,7 @@ import { createContext } from  'asynchronous-context-rpc/ws-frontend-callapi-con
 
 
 
-async function handle_event_of_ws_frontend( nargs ) {
+async function handle_on_event_of_ws_frontend_respapi( nargs ) {
   const {
     event_name         = ((name)=>{throw new Error(`${name} is not defined`)})('event_name'),
     event_handler_name = ((name)=>{throw new Error(`${name} is not defined`)})('event_handler_name'),
@@ -22,7 +22,7 @@ async function handle_event_of_ws_frontend( nargs ) {
     websocket          = ((name)=>{throw new Error(`${name} is not defined`)})('websocket'),
   } = nargs;
 
-  console.log('LOG','handle_event_of_ws_frontend');
+  console.log('LOG','handle_on_event_of_ws_frontend_respapi');
 
   /*
    * Call the specified event handler on the context object.
@@ -50,7 +50,7 @@ async function handle_event_of_ws_frontend( nargs ) {
       },
     );
 
-  console.log( 'handle_event_of_ws_frontend : %s', respapi_result );
+  console.log( 'handle_on_event_of_ws_frontend_respapi : %s', respapi_result );
 
 };
 
@@ -80,7 +80,7 @@ function ws_frontend_tethering_respapi(nargs) {
         this.frontendContext.websocket = websocket;
 
         try {
-          await handle_event_of_ws_frontend({
+          await handle_on_event_of_ws_frontend_respapi({
             event_name         : 'open',
             event_handler_name : 'on_open',
             context            : this.frontendContext,
@@ -104,14 +104,14 @@ function ws_frontend_tethering_respapi(nargs) {
       console.log( 'WebSocket', 'closed' );
 
       try {
-        await handle_event_of_ws_frontend({
+        await handle_on_event_of_ws_frontend_respapi({
           event_name         : 'close',
           event_handler_name : 'on_close',
           context            : this.frontendContext,
           websocket          : this.websocket,
         });
       } catch ( e ) {
-        console.error('handle_event_of_ws_frontend on_close threw an error. ignored. ', e);
+        console.error('handle_on_event_of_ws_frontend_respapi on_close threw an error. ignored. ', e);
       }
 
       this.websocket = null;
