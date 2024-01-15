@@ -12,6 +12,13 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
     throw new Error( `package name is invalid : the specified value '${ path_to_context_factory }' is '${typeof path_to_context_factory }'` );
   }
 
+  path_to_context_factory =
+    new URL( path_to_context_factory,
+      ...(
+        typeof process === 'object' ? [ new URL( process?.cwd() + '/' , 'file://' ) ] : [ document.baseURI ]
+      )
+    );
+
   if ( typeof purge_require_cache  !== 'boolean' ) {
     throw new Error( `purge_require_cache is invalid : the specified value '${ purge_require_cache }' is '${typeof purge_require_cache }'` );
   }
