@@ -2,8 +2,9 @@
   "env": {
   },
   "async_context_websocket_backend" : {
-    "context_factory1" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory",
+    "context_factory2" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory",
     "context_factory3" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
+    "context_factory4" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory-bad",
     "context_factory" :"./ws-frontend-respapi-test-context-factory.js",
     "purge_require_cache" : false,
     "static_paths":[],

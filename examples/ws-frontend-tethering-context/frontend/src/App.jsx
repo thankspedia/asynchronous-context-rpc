@@ -3,23 +3,14 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Hello } from './ws.js';
-
-import { useWebSocketTether } from 'ws-tether/hook';
-import { createContext } from 'asynchronous-context-rpc/ws-frontend-callapi-context-factory' ;
-import {
-  handle_on_event_of_ws_frontend_respapi,
-  handle_on_message_of_ws_frontend_respapi,
-  create_tether_configs_of_ws_frontend_respapi,
-} from "asynchronous-context-rpc/ws-frontend-respapi";
-
+import { useRespapiWebSocketTether } from "asynchronous-context-rpc/hooks.mjs";
 
 function App() {
   const [count, setCount] = React.useState(0);
-  const contexts = useWebSocketTether(
-    create_tether_configs_of_ws_frontend_respapi({
+  const contexts = useRespapiWebSocketTether({
       url : 'ws://schizostylis.local:3632/foo',
       frontend_context_factory : ()=>Hello.create(),
-    }));
+    });
 
   async function handleClick() {
     try {
