@@ -247,6 +247,12 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   },
 };
 
+/**
+ *{
+ *  url : 'ws://schizostylis.local:3632/foo',      // URL to the WebSocket server
+ *  frontend_context_factory : ()=>Hello.create(), // A factory function generates  Context object instances.
+ *};
+ */
 export function create_tether_configs_of_ws_frontend_respapi(arg_configs) {
   return Object.assign({}, tether_default_configs_of_ws_frontend_respapi, arg_configs );
 }
