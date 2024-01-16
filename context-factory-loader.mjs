@@ -12,7 +12,7 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
     throw new Error( `package name is invalid : the specified value '${ path_to_context_factory }' is '${typeof path_to_context_factory }'` );
   }
 
-  path_to_context_factory =
+  const url_to_context_factory =
     new URL( path_to_context_factory,
       ...(
         typeof process === 'object' ? [ new URL( process?.cwd() + '/' , 'file://' ) ] : [ document.baseURI ]
@@ -23,36 +23,27 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
     throw new Error( `purge_require_cache is invalid : the specified value '${ purge_require_cache }' is '${typeof purge_require_cache }'` );
   }
 
-  let result = null;
-  if ( purge_require_cache ) {
-    result = (
-      async function() {
+  const result = (
+    async function() {
+      if ( purge_require_cache ) {
         purgeRequireCache();
+      }
 
+      try {
+        // always get fresh, and the latest createContext() function
+        return (await import( path_to_context_factory )).createContext();
+      } catch ( e1 ) {
         try {
           // always get fresh, and the latest createContext() function
-          return (await import( path_to_context_factory )).createContext();
-        } catch ( e ) {
-          console.error(e);
-          throw e;
+          return (await import( url_to_context_factory )).createContext();
+        } catch ( e2 ) {
+          console.error('e1', e1);
+          console.error('e2', e2);
+          throw e2;
         }
       }
-    );
-  } else {
-    result = (
-      async function() {
-        try {
-          // purgeRequireCache();
-
-          // always get fresh, and the latest createContext() function
-          return (await import( path_to_context_factory )).createContext();
-        } catch ( e ) {
-          console.error(e);
-          throw e;
-        }
-      }
-    );
-  }
+    }
+  );
 
   // Check if the created loader works properly.
   result()
