@@ -22,6 +22,7 @@ const t_respapi_message = schema.compile`
 `();
 export { t_respapi_message as t_respapi_message };
 
+import { createContext } from 'asynchronous-context-rpc/ws-frontend-callapi-context-factory' ;
 
 
 async function handle_on_message_of_ws_frontend_respapi( nargs ) {
