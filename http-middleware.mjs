@@ -2,8 +2,10 @@ import express         from 'express' ;
 import bodyParser      from 'body-parser';
 import url             from 'url';
 import { respapi }     from 'asynchronous-context-rpc/respapi.mjs';
+import { set_default_context_options } from "./respapi-utils.mjs";
 
-export const AUTO_CONNECTION = '__AUTO_CONNECTION__';
+// export const AUTO_COMMIT     = 'autoCommit';
+// export const AUTO_CONNECT    = 'autoConnect';
 export const METHOD_GET      = 'GET';
 export const METHOD_HEAD     = 'HEAD';
 export const METHOD_POST     = 'POST';
@@ -16,6 +18,7 @@ export const METHOD_PATCH    = 'PATCH';
 
 export const MSG_SUCCEEDED   = 'succeeded';
 export const MSG_ERROR       = 'error';
+
 
 function createSuccessful(value) {
   const status = MSG_SUCCEEDED;
@@ -308,32 +311,31 @@ function __create_middleware( contextFactory ) {
         /*
          * The procedure to execute before invocation of the method.
          */
-        async function context_initializer( resolved_callapi_method ) {
-          this.logger.output({
+        async function context_initializer( context, resolved_callapi_method ) {
+          context.logger.output({
             type : 'begin_of_method_invocation',
             info : {
               ...session_info,
             }
           });
-
           console.log( 'sZc3Uifcwh0',  resolved_callapi_method );
 
           // 4) get the current authentication token.
-          if ( 'set_user_identity' in this ) {
+          if ( 'set_user_identity' in context ) {
             const authentication_token = get_authentication_token( req );
 
             // (Wed, 07 Sep 2022 20:13:01 +0900)
-            await this.set_user_identity( authentication_token );
+            await context.set_user_identity( authentication_token );
           }
 
-          this.setOptions({ showReport : false, coloredReport:true });
-
-          if ( resolved_callapi_method.tags.includes( AUTO_CONNECTION ) ) {
-            console.log( 'ew6pMCEV3o', resolved_callapi_method );
-            this.setOptions({ autoCommit : true });
-
-            console.log( 'ew6pMCEV3o', this.getOptions() );
-          }
+          set_default_context_options(
+            context,
+            resolved_callapi_method,
+            {
+              // Specify `autoConnect` === true explicitly. (Wed, 17 Jan 2024 13:47:51 +0900)
+              autoConnect : true,
+            }
+          );
         }
 
         // (Mon, 05 Jun 2023 20:07:53 +0900)
@@ -365,7 +367,7 @@ function __create_middleware( contextFactory ) {
               session_info.target_method = target_method;
 
               // (Mon, 05 Jun 2023 20:07:53 +0900)
-              await context_initializer.call( context, resolved_callapi_method );
+              await context_initializer.call( null, context, resolved_callapi_method );
 
               /*
                * Invoking the Resolved Method

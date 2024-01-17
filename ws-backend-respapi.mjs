@@ -4,8 +4,10 @@ import { parse } from 'url';
 import { trace_validator } from 'vanilla-schema-validator' ;
 import { respapi, t_respapi_message } from './respapi.mjs' ;
 import { createContext  } from './ws-backend-callapi-context-factory.mjs' ;
+import { set_default_context_options } from "./respapi-utils.mjs";
 
-const AUTO_CONNECTION = '__AUTO_CONNECTION__';
+// const AUTO_CONNECT = '__AUTO_CONNECT__';
+// const AUTO_COMMIT = '__AUTO_COMMIT__';
 
 /*
  * function on_init_websocket( websocket, req ) {
@@ -189,28 +191,15 @@ async function handle_message_of_ws_backend( nargs ) {
   /*
    * The procedure to execute before invocation of the method.
    */
-  async function context_initializer( resolved_callapi_method ) {
+  async function context_initializer( context, resolved_callapi_method ) {
     this.logger.output({
       type : 'begin_of_method_invocation',
       info : {
         resolved_callapi_method
       }
     });
-
     console.log( 'dGNndxPMXh',  resolved_callapi_method );
-
-    /*
-     * These steps which are done in this block `context_initializer` should be
-     * shared for the sake of maintainability. (Thu, 21 Dec 2023 15:27:24 +0900)
-     */
-    this.setOptions({ showReport : true, coloredReport:true });
-
-    if ( resolved_callapi_method.tags.includes( AUTO_CONNECTION ) ) {
-      console.log( 'ew6pMCEV3o', resolved_callapi_method );
-      this.setOptions({ autoCommit : true });
-
-      console.log( 'ew6pMCEV3o', this.getOptions() );
-    }
+    set_default_context_options( context, resolved_callapi_method, {} );
   }
 
   console.log('AAAAAAAAAAA NO2', req.headers );
@@ -230,7 +219,7 @@ async function handle_message_of_ws_backend( nargs ) {
       async ( resolved_callapi_method )=>{
 
         // (Mon, 05 Jun 2023 20:07:53 +0900)
-        await context_initializer.call( context, resolved_callapi_method );
+        await context_initializer.call( null, context, resolved_callapi_method );
 
         /*
          * Invoking the Resolved Method
