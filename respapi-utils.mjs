@@ -19,7 +19,7 @@ export function set_default_context_options( context, resolved_callapi_method, a
    * Wed, 17 Jan 2024 15:14:53 +0900
    */
   const dynamically_specified_options =
-    resolved_callapi_method.tags.reduce( (accum,curr)=>accum[curr]=true, {} );
+    resolved_callapi_method.tags.reduce( (accum,curr)=> accum[curr]=true && accum , {} );
 
   context.setOptions(
     {
@@ -27,7 +27,7 @@ export function set_default_context_options( context, resolved_callapi_method, a
       ...additional_default_options,
       ...dynamically_specified_options,
     }
-  ));
+  );
 
   //
   // if ( resolved_callapi_method.tags.includes( AUTO_COMMIT ) ) {

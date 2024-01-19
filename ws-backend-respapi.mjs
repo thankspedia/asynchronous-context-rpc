@@ -192,7 +192,7 @@ async function handle_message_of_ws_backend( nargs ) {
    * The procedure to execute before invocation of the method.
    */
   async function context_initializer( context, resolved_callapi_method ) {
-    this.logger.output({
+    context.logger.output({
       type : 'begin_of_method_invocation',
       info : {
         resolved_callapi_method
