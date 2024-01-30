@@ -76,9 +76,15 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
       },
     );
 
-  console.log( 'received No.1: %s', message?.data );
-  console.log( 'respapi_result', respapi_result );
-  // console.log( 'context.hello_world', await context.hello_world() );
+
+  if ( respapi_result.status  === 'error' ) {
+    console.error( 'error', respapi_result.value );
+    console.error( 'received No.1: %s', message?.data );
+    console.error( 'respapi_result', respapi_result );
+  } else {
+    console.log( 'received No.1: %s', message?.data );
+    console.log( 'respapi_result', respapi_result );
+  }
 
   return context
 }
