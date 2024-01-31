@@ -253,7 +253,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
     this.frontend_context.websocket = null
   },
 
-  on_error : function (...args) {
+  on_error : async function (...args) {
     console.log( 'App', 'on_error' );
 
     // Set `is_open` property before calling the event handler.
