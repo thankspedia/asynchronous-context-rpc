@@ -172,13 +172,24 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   url :  null,
   frontend_context_factory : null,
   interval : 1000,
+
   on_initialization : function() {
     console.log( 'App', 'on_initialization' );
     this.frontend_context = this.configs.frontend_context_factory.call(this);
+    this.frontend_context.is_open = false;
   },
+
   on_finalization : function() {
     console.log( 'App', 'on_finalization' );
+    this.frontend_context.is_open = false;
   },
+
+  /*
+   * Note that a session always starts with `on_open()` and ends either
+   * `on_error()` event or `on_close()` event.
+   *
+   * (Wed, 31 Jan 2024 11:40:45 +0900)
+   */
   on_open : async function () {
     console.log( 'App', 'on_open' );
     try {
@@ -197,6 +208,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
 
       this.frontend_context.backend   = this.backend_context;
       this.frontend_context.websocket = this.current_websocket;
+      this.frontend_context.is_open   = true;
 
       try {
         await handle_on_event_of_ws_frontend_respapi({
@@ -222,6 +234,9 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   on_close : async function() {
     console.log( 'App', 'on_close' );
 
+    // Set `is_open` property before calling the event handler.
+    this.frontend_context.is_open   = false;
+
     try {
       await handle_on_event_of_ws_frontend_respapi({
         event_name         : 'close',
@@ -233,8 +248,29 @@ export const tether_default_configs_of_ws_frontend_respapi = {
       console.error('handle_on_event_of_ws_frontend_respapi on_close threw an error. ignored. ', e);
     }
 
-    // this.websocket = null;
-    this.frontend_context.backend = null
+    // Set the other properties after the calling event handler.
+    this.frontend_context.backend   = null
+    this.frontend_context.websocket = null
+  },
+
+  on_error : function (...args) {
+    console.log( 'App', 'on_error' );
+
+    // Set `is_open` property before calling the event handler.
+    this.frontend_context.is_open   = false;
+    try {
+      await handle_on_event_of_ws_frontend_respapi({
+        event_name         : 'error',
+        event_handler_name : 'on_error',
+        context            : this.frontend_context,
+        websocket          : this.current_websocket,
+      });
+    } catch ( e ) {
+      console.error('handle_on_event_of_ws_frontend_respapi on_close threw an error. ignored. ', e);
+    }
+
+    // Set the other properties after the calling event handler.
+    this.frontend_context.backend   = null
     this.frontend_context.websocket = null
   },
 
@@ -245,11 +281,6 @@ export const tether_default_configs_of_ws_frontend_respapi = {
       websocket : this.current_websocket,
       message,
     });
-  },
-
-  on_error : function (...args) {
-    console.log( 'App', 'on_error' );
-    console.error( ...args );
   },
 };
 
