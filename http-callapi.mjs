@@ -153,7 +153,7 @@ async function http_callapi_handler( nargs ) {
     // console.log( 'respoinse_text',  response_text );
     const response_json  = parse_response( response_text );
 
-    console.log( 'The Result of API', response_json );
+    console.log( 'The Result of API', method_path, method_args, response_json );
     if ( ( 'status' in response_json ) && ( response_json[ 'status' ] === 'succeeded' ) ) {
       return response_json
     } else {
