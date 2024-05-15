@@ -4,8 +4,6 @@ import url             from 'url';
 import { respapi }     from 'asynchronous-context-rpc/respapi.mjs';
 import { set_default_context_options } from "./respapi-utils.mjs";
 
-// export const AUTO_COMMIT     = 'autoCommit';
-// export const AUTO_CONNECT    = 'autoConnect';
 export const METHOD_GET      = 'GET';
 export const METHOD_HEAD     = 'HEAD';
 export const METHOD_POST     = 'POST';
@@ -333,9 +331,13 @@ function __create_middleware( contextFactory ) {
             resolved_callapi_method,
             {
               // Specify `autoConnect` === true explicitly. (Wed, 17 Jan 2024 13:47:51 +0900)
-              autoConnect : true,
+              // Rather specify `autoCommit` === true explicitly. (Wed, 15 May 2024 16:51:00 +0900)
+              autoCommit : true,
             }
           );
+          /*
+           * Note that http-middleware is the only module which specifies autoCommit === true as default.
+           */
         }
 
         // (Mon, 05 Jun 2023 20:07:53 +0900)
