@@ -38,6 +38,8 @@ export function loadContextFactory( /* the package name of */ path_to_context_fa
           return (await import( url_to_context_factory )).createContext();
         } catch ( e2 ) {
           console.error( 'context-factory-loader:failed to load', path_to_context_factory );
+          console.error( 'error1',  e1.code );
+          console.error( 'error2',  e2.code );
           throw new Error( `context-factory-loader : could not load the specified context-factory (${path_to_context_factory}): 1st error : ${e1.message} and 2nd error :${e2.message} `  , {cause:e2});
         }
       }
