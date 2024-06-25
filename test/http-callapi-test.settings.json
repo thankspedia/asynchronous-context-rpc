@@ -6,8 +6,12 @@
     "end": true
   },
   "async_context_backend" : {
-    "context_factory" :"./test/http-callapi-test-context-factory.mjs",
-    "purge_require_cache" : false,
+    "context_factory" : {
+      "path":"./test/http-callapi-test-context-factory.mjs",
+      "options" : {
+        "purge_require_cache" : false
+      }
+    },
     "static_paths":[],
     "ports": [ 2004 ],
     "cors_origins" : [

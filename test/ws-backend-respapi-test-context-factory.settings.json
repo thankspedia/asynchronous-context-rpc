@@ -6,8 +6,12 @@
     "end": true
   },
   "async_context_backend" : {
-    "context_factory" :"./http-middleware-test-context-factory",
-    "purge_require_cache" : false,
+    "context_factory" :{
+      "path" : "./http-middleware-test-context-factory",
+      "options" : {
+        "purge_require_cache" : false
+      }
+    },
     "static_paths":[],
     "ports": [ 2003 ],
     "cors_origins" : [
@@ -16,8 +20,12 @@
     "end": true
   },
   "async_context_websocket_backend" : {
-    "context_factory" : "asynchronous-context-rpc/test/ws-backend-respapi-test-context-factory.mjs",
-    "purge_require_cache" : false,
+    "context_factory" :{
+      "path" : "asynchronous-context-rpc/test/ws-backend-respapi-test-context-factory.mjs",
+      "options" : {
+        "purge_require_cache" : false
+      }
+    },
     "static_paths":[],
     "path":  "/foo",
     "ports": [ 3953 ],

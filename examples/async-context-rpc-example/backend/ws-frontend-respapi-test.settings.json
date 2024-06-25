@@ -2,8 +2,12 @@
   "env": {
   },
   "async_context_websocket_backend" : {
-    "context_factory" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
-    "purge_require_cache" : false,
+    "context_factory" :{
+      "path" :"asynchronous-context-rpc/examples/async-context-rpc-example/backend/ws-frontend-respapi-test-context-factory.js",
+      "options" : {
+        "purge_require_cache" : false
+      }
+    },
     "static_paths":[],
     "ports": [ 3000, 3632 ],
     "path" : "/foo",

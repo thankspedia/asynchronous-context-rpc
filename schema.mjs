@@ -1,6 +1,7 @@
 
 /*
- * context_factory : specify the package name of the starting context factory
+ * context_factory.path    : specify the package name of the starting context factory
+ * context_factory.options : specify the options to pass to the context factory
  * static_paths    : file paths to static contents which you wish to serve by
  *                   the server
  * ports           : specify server ports that you wish to start
@@ -10,8 +11,12 @@ function init( schema ) {
   schema.t_async_context_service_settings = schema.compile`
     object(
       async_context_backend : object(
-        context_factory     : string(),
-        purge_require_cache : boolean(),
+        context_factory     : object(
+          path : string(),
+          options : object(
+            purge_require_cache : or( boolean(), undefined() ),
+          ),
+        ),
         static_paths        : array_of( string() ),
         ports               : and(
                                 array_of( number() ),

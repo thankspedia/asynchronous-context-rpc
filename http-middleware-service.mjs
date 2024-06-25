@@ -43,7 +43,6 @@ const loadService = ( serviceSettings )=>{
     ports               = [],
     cors_origins        = 'ALLOW_ALL',
     context_factory     = (()=>{throw new Error('context_factory is not defined')})(),
-    purge_require_cache = false,
   } = serviceSettings;
 
   console.log( `Starting a middleware service with context_factory=${context_factory}` );
@@ -60,7 +59,7 @@ const loadService = ( serviceSettings )=>{
   }
 
 
-  const contextFactory = loadContextFactory( context_factory, purge_require_cache );
+  const contextFactory = loadContextFactory( context_factory );
 
   const createApp = ()=>{
     // Initializing the app.

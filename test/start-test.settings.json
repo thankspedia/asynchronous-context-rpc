@@ -9,8 +9,12 @@
     "services" : [
       {
         "type" : "http",
-        "context_factory" :"asynchronous-context-rpc/test/start-test-context-factory.mjs",
-        "purge_require_cache" : false,
+        "context_factory" :{
+          "path" : "asynchronous-context-rpc/test/start-test-context-factory.mjs",
+          "options" : {
+            "purge_require_cache" : false
+          }
+        },
         "static_paths":[],
         "ports": [ 2012 ],
         "cors_origins" : [
@@ -20,8 +24,12 @@
       },
       {
         "type" : "http",
-        "context_factory" :"asynchronous-context-rpc/test/start-test-context-factory.mjs",
-        "purge_require_cache" : false,
+        "context_factory" : {
+          "path" : "asynchronous-context-rpc/test/start-test-context-factory.mjs",
+          "options" : {
+            "purge_require_cache" : false
+          }
+        },
         "static_paths":[],
         "ports": [ 2018 ],
         "cors_origins" : [
@@ -31,8 +39,12 @@
       },
       {
         "type" : "ws",
-        "context_factory" :"asynchronous-context-rpc/test/ws-backend-respapi-test-context-factory.mjs",
-        "purge_require_cache" : false,
+        "context_factory" :{
+          "path" : "asynchronous-context-rpc/test/ws-backend-respapi-test-context-factory.mjs",
+          "context_factory_options" : {
+            "purge_require_cache" : false
+          }
+        },
         "static_paths":[],
         "path":  "/foo",
         "ports": [ 3959 ],
@@ -45,8 +57,12 @@
   },
 
   "--async_context_backend" : {
-    "context_factory" :"./test/http-callapi-test-context-factory.mjs",
-    "purge_require_cache" : false,
+    "context_factory" :{
+      "path" : "./test/http-callapi-test-context-factory.mjs",
+      "options" : {
+        "purge_require_cache" : false
+      }
+    },
     "static_paths":[],
     "ports": [ 2004 ],
     "cors_origins" : [

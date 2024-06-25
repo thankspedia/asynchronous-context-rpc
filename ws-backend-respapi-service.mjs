@@ -161,11 +161,10 @@ function default_cors_origins( origin, callback ) {
 
 function loadService( serviceSettings ) {
   const {
-    ports               = [],
-    // cors_origins        = default_cors_origins,
-    context_factory     = ((name)=>{throw new Error( `${name} is not defined` )})('context_factory'),
-    path                = ((name)=>{throw new Error( `${name} is not defined` )})('path'),
-    purge_require_cache = false,
+    ports                   = [],
+    // cors_origins            = default_cors_origins,
+    context_factory         = ((name)=>{throw new Error( `${name} is not defined` )})('context_factory'),
+    path                    = ((name)=>{throw new Error( `${name} is not defined` )})('path'),
   } = serviceSettings;
 
   if ( ( ports.length ?? 0 ) < 1 ) {
@@ -175,7 +174,7 @@ function loadService( serviceSettings ) {
 
   const event_handlers = {};
 
-  const create_context = loadContextFactory( context_factory, purge_require_cache );
+  const create_context = loadContextFactory( context_factory );
 
   return (
     start_service_for_ws_backend({
