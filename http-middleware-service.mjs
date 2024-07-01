@@ -66,10 +66,12 @@ const loadService = ( serviceSettings )=>{
     const app = express();
 
     // app.use(require('morgan')('dev'));
-    app.use( (req,res,next)=>{
-      console.log( 'req.path', req.path );
-      next();
-    });
+    // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+    // app.use( (req,res,next)=>{
+    //   console.log( 'req.path', req.path );
+    //   next();
+    // });
+    // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
     app.use(           cors( { origin : cors_origins } ) );
     app.use( '/api',   create( contextFactory )    );

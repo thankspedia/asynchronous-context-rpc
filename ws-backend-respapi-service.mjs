@@ -125,10 +125,12 @@ const start_service_for_ws_backend = (nargs)=>{
     const app = express();
     // app.use( cors( { origin : cors_origins } ) );
     // app.use(require('morgan')('dev'));
+    // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
     app.use( (req,res,next)=>{
-      console.log( 'req.path', req.path );
+      console.log( 'FIXME Hi1YaP7EnYR', 'req.path', req.path );
       next();
     });
+    // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
     return [app];
   };
 

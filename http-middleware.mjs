@@ -269,9 +269,14 @@ function __create_middleware( contextFactory ) {
 
         if ( callapi_method_path.length === 0 ) {
           res.status(404).json({status:'error', reason : 'not found' } ).end();
-          (async()=>{
-            console.log(LOG_PREFIX,'http result:', 404 );
-          })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
+
+
+          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+          // (async()=>{
+          //   console.log(LOG_PREFIX,'http result:', 404 );
+          // })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
+          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+
           done = true;
 
           // Abort the process.
@@ -316,7 +321,12 @@ function __create_middleware( contextFactory ) {
               ...session_info,
             }
           });
-          console.log( 'sZc3Uifcwh0',  resolved_callapi_method );
+
+          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+          // (async()=>{
+          //   console.log( 'sZc3Uifcwh0',  resolved_callapi_method );
+          // })();
+          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
           // 4) get the current authentication token.
           if ( 'set_user_identity' in context ) {
@@ -402,7 +412,11 @@ function __create_middleware( contextFactory ) {
           // as a JSON object.
           let respond = respond_as_json;
 
-          console.log( '0aCa8xD0oY0', respapi_result );
+          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+          // (async ()=>{
+          //   console.log( '0aCa8xD0oY0', respapi_result );
+          // })()
+          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
           if ( false ) {
             // dummy
@@ -471,13 +485,15 @@ function __create_middleware( contextFactory ) {
           // <<< MODIFIED (Mon, 31 Jul 2023 17:27:12 +0900)
           done = true;
 
-          // The Logging Series No.2
-          context.logger.output({ type  : 'the_result_of_method_invocation', ...result, });
 
-          // The Logging Series No.3
-          (async()=>{
-            console.log( LOG_PREFIX, 'http result:', result );
-          })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
+          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+          // // The Logging Series No.2
+          // context.logger.output({ type  : 'the_result_of_method_invocation', ...result, });
+          // // The Logging Series No.3
+          // (async()=>{
+          //   console.log( LOG_PREFIX, 'http result:', result );
+          // })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
+          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
           // Abort the process.
           return;
@@ -553,7 +569,9 @@ function __create_middleware( contextFactory ) {
         try {
           if ( context != null ) {
             context.logger.reportResult( is_successful ?? false )
-              .then(err=>{console.log('logging finished');console.error('logging2',err)} )
+              // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+              // .then( err=>{console.log('logging finished');console.error('logging2',err)} )
+              // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
               .catch(err=>{console.error(MSG_UNCAUGHT_ERROR);console.error(err)});
           }
         } catch ( err ) {
@@ -581,10 +599,13 @@ function create_middleware( contextFactory ) {
   }
 
   const router = express.Router();
-  router.use((req,res,next)=>{
-    console.log( LOG_PREFIX, "middleware:", req.url );
-    next();
-  });
+
+  // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+  // router.use((req,res,next)=>{
+  //   console.log( LOG_PREFIX, "middleware:", req.url );
+  //   next();
+  // });
+  // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
   // router.use(express.json());
   // router.use(bodyParser.urlencoded({ extended: true }));

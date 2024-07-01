@@ -98,26 +98,33 @@ export { resolve_callapi_method_path };
 const respapi = typesafe_function(
   async function respapi( callapi_target, callapi_method_path, required_typesafe_tag, on_execution ) {
     const resolved_callapi_method = resolve_callapi_method_path( callapi_target, callapi_method_path, required_typesafe_tag );
+    let result = null;
 
     if ( resolved_callapi_method.status === 'found' ) {
       try {
         const value = await on_execution( resolved_callapi_method );
-        return {
+        result = {
           ...resolved_callapi_method,
           status : 'succeeded',
           value  : value,
         };
+
       } catch (err) {
-        console.error('pd9ZpaS53L8',err);
-        return {
+        // console.error('pd9ZpaS53L8',err);
+        result = {
           ...resolved_callapi_method,
           status : 'error',
           value  : err,
         };
       }
+
     } else {
-      return resolved_callapi_method;
+      result ={
+        ...resolved_callapi_method,
+      };
     }
+
+    return result;
 
   }, {
     typesafe_input : schema.compile`
