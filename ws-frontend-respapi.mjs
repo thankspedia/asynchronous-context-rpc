@@ -132,7 +132,7 @@ export async function handle_on_event_of_ws_frontend_respapi( nargs ) {
 
 
 
-export const ws_frontend_respapi_handlers = {
+export const create_ws_frontend_respapi_handlers = ( websocket, context )=>({
   on_message : (message)=>{
     return handle_on_message_of_ws_frontend_respapi({
       context,
@@ -143,7 +143,7 @@ export const ws_frontend_respapi_handlers = {
   on_error : (...args)=>{
     console.error( ...args );
   },
-};
+});
 
 
 /*
@@ -154,6 +154,7 @@ export const ws_frontend_respapi_handlers = {
  */
 
 function on_init_websocket_of_ws_frontend_respapi( websocket, context ) {
+  const ws_frontend_respapi_handlers = create_ws_frontend_respapi_handlers( websocket, context );
   websocket.addEventListener( 'message', ws_frontend_respapi_handlers.on_message );
   websocket.addEventListener( 'error',   ws_frontend_respapi_handlers.on_error );
 }

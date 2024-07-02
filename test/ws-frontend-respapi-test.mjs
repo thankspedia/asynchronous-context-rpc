@@ -8,7 +8,7 @@ import { AsyncContext }                         from   'asynchronous-context'  ;
 
 import { create_callapi }                                     from 'asynchronous-context-rpc/callapi.mjs'  ;
 import { websocket_callapi_handler }                          from 'asynchronous-context-rpc/ws-callapi.mjs'  ;
-import { create_websocket, await_websocket, await_sleep }     from 'asynchronous-context-rpc/ws-utils.mjs'  ;
+import { create_websocket, await_websocket, await_sleep }     from 'ws-tether/ws-utils.mjs'  ;
 import { set_typesafe_tags }                                  from 'runtime-typesafety'  ;
 import { filenameOfSettings }                                 from 'asynchronous-context/settings';
 import { dotenvFromSettings }                                 from 'asynchronous-context/env' ;

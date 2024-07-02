@@ -70,8 +70,11 @@ describe( async ()=>{
 
       const close = ()=>websocket.close();
 
-      websocket.on( 'message', ( data )=>{
-        const v = JSON.parse( data.toString() );
+      console.log( "83hdlOFdSNwNhqEkcu2jAiH7/B3Hsisrw4RYSzszS0M=", websocket );
+
+      websocket.addEventListener( 'message', ( message )=>{
+        console.log( "0v0EPQ8KcLcoCZwD+q24kWxmI6fAMYR9TGSwLHfunyQ=", message.data );
+        const v = JSON.parse( message.data.toString() );
         if ( v === 'Okay, your request was received.' ) {
           resolve(v);
         } else {
@@ -98,8 +101,9 @@ describe( async ()=>{
       const websocket = (await context.websocket() );
       const close = ()=>websocket.close();
 
-      websocket.on( 'message', ( data )=>{
-        const v = JSON.parse( data.toString() );
+      websocket.addEventListener( 'message', ( message )=>{
+        console.log( "0v0EPQ8KcLcoCZwD+q24kWxmI6fAMYR9TGSwLHfunyQ=", message.data );
+        const v = JSON.parse( message.data.toString() );
         console.log( 'hJGqsnbq5A4', v );
         if ( v.message.join(',') === 'okay,hello,world,foo' ) {
           resolve(v);
