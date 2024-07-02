@@ -111,31 +111,35 @@ async function handle_event_of_ws_backend( nargs ) {
       'WEBSOCKET_EVENT_HANDLER',
 
       /* on_execution */
-      async ( resolved_callapi_method, target_method_args )=>{
-
-        // context.logger.reset();
-        context.setOptions({ showReport : true, coloredReport:true });
-
-        /*
-         * Invoking the Resolved Method
-         */
-        const target_method      = resolved_callapi_method.value;
-
-        let is_successful = false;
-        let result = null;
-        try {
-          result = await (context.executeTransaction( target_method, ... target_method_args ));
-          is_successful = true;
-        } catch (e) {
-          console.error( 'respapi_result',e );
-        } finally {
-          // if ( context != null ) {
-          //   context.logger.reportResult( is_successful ?? false )
-          //     .then( e=>{ console.log('logging finished');  console.error('logging2',e)} )
-          //     .catch(e=>{ console.error(MSG_UNCAUGHT_ERROR);console.error(e)});
-          // }
-          return result;
-        }
+      {
+        // async ( resolved_callapi_method, target_method_args )=>{
+        //   // context.logger.reset();
+        //   context.setOptions({ showReport : true, coloredReport:true });
+        //   /*
+        //    * Invoking the Resolved Method
+        //    */
+        //   const target_method      = resolved_callapi_method.value;
+        //   let is_successful = false;
+        //   let result = null;
+        //   try {
+        //     result = await (context.executeTransaction( target_method, ... target_method_args ));
+        //     is_successful = true;
+        //   } catch (e) {
+        //     console.error( 'respapi_result',e );
+        //   } finally {
+        //     // if ( context != null ) {
+        //     //   context.logger.reportResult( is_successful ?? false )
+        //     //     .then( e=>{ console.log('logging finished');  console.error('logging2',e)} )
+        //     //     .catch(e=>{ console.error(MSG_UNCAUGHT_ERROR);console.error(e)});
+        //     // }
+        //     return result;
+        //   }
+        // },
+        async on_before_execution( resolved_callapi_method, target_method_args ) {
+          const context = resolved_callapi_method.callapi_target;
+          // context.logger.reset();
+          context.setOptions({ showReport : true, coloredReport:true });
+        },
       },
     );
 
@@ -195,7 +199,8 @@ async function handle_message_of_ws_backend( nargs ) {
   /*
    * The procedure to execute before invocation of the method.
    */
-  async function context_initializer( context, resolved_callapi_method ) {
+  async function on_before_execution( resolved_callapi_method, callapi_method_args ) {
+    const context = resolved_callapi_method.callapi_target;
     context.logger.output({
       type : 'begin_of_method_invocation',
       info : {
@@ -228,34 +233,34 @@ async function handle_message_of_ws_backend( nargs ) {
 
       /* http-method as TAGS */
       'WEBSOCKET_METHOD',
-
-      /* on_execution */
-      async ( resolved_callapi_method, target_method_args )=>{
-
-        // (Mon, 05 Jun 2023 20:07:53 +0900)
-        await context_initializer.call( null, context, resolved_callapi_method );
-
-        /*
-         * Invoking the Resolved Method
-         */
-        const target_method      = resolved_callapi_method.value
-
-        let is_successful = false;
-        let result = null;
-        try {
-          result = await (context.executeTransaction( target_method, ... target_method_args ));
-          is_successful = true;
-        } catch (e) {
-          console.error( 'respapi_result',e );
-        } finally {
-          if ( context != null ) {
-            context.logger.reportResult( is_successful ?? false )
-              .then( e=>{ console.log('logging finished');  console.error('logging2',e)} )
-              .catch(e=>{ console.error(MSG_UNCAUGHT_ERROR);console.error(e)});
-          }
-          return result;
-        }
+      {
+        on_before_execution
       },
+      // Tue, 02 Jul 2024 19:39:54 +0900
+      /* on_execution */
+      // async ( resolved_callapi_method, target_method_args )=>{
+      //   // (Mon, 05 Jun 2023 20:07:53 +0900)
+      //   await context_initializer.call( null, context, resolved_callapi_method );
+      //   /*
+      //    * Invoking the Resolved Method
+      //    */
+      //   const target_method      = resolved_callapi_method.value
+      //   let is_successful = false;
+      //   let result = null;
+      //   try {
+      //     result = await (context.executeTransaction( target_method, ... target_method_args ));
+      //     is_successful = true;
+      //   } catch (e) {
+      //     console.error( 'respapi_result',e );
+      //   } finally {
+      //     if ( context != null ) {
+      //       context.logger.reportResult( is_successful ?? false )
+      //         .then( e=>{ console.log('logging finished');  console.error('logging2',e)} )
+      //         .catch(e=>{ console.error(MSG_UNCAUGHT_ERROR);console.error(e)});
+      //     }
+      //     return result;
+      //   }
+      // },
     );
 
   console.log( 'received No.1: %s', data );
