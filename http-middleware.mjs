@@ -384,18 +384,9 @@ function __create_middleware( contextFactory ) {
             /* http-method as TAGS */
             req.method,
 
-
-            /* on_execution */
+            /* event_handlers */
             {
-              on_before_execution
-
-              // async on_execution( resolved_callapi_method, callapi_method_args ) {
-              //   const target_method = resolved_callapi_method.value;
-              //   /*
-              //    * Invoking the Resolved Method
-              //    */
-              //   return await (context.executeTransaction( target_method, ... callapi_method_args ));
-              // },
+              on_before_execution,
             }
           );
 

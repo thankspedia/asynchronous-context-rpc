@@ -69,21 +69,9 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
 
       /* http-method as TAGS */
       'WEBSOCKET_METHOD',
+      /* event_handlers */
       {
       },
-      // The default function is suffice to work properly now.
-      // Tue, 02 Jul 2024 19:39:16 +0900
-      //
-      // /* on_execution */
-      // async ( resolved_callapi_method, target_method_args )=>{
-      //   // (Mon, 05 Jun 2023 20:07:53 +0900)
-      //   // await context_initializer.call( context, resolved_callapi_method );
-      //   /*
-      //    * Invoking the Resolved Method
-      //    */
-      //   const target_method      = resolved_callapi_method.value
-      //   return await (context.executeTransaction( target_method, ... target_method_args ));
-      // },
     );
 
 
