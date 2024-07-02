@@ -90,6 +90,8 @@ async function handle_event_of_ws_backend( nargs ) {
 
   console.log('LOG', 'handle_event_of_ws_backend', event_handler_name );
 
+  const target_method_args = [{websocket,event_name}]; // message.command_value.method_args;
+
   /*
    * Call the specified event handler on the context object.
    */
@@ -102,11 +104,14 @@ async function handle_event_of_ws_backend( nargs ) {
       // message.command_value.method_path,
       [event_handler_name],
 
+      /* callapi_method_args */
+      target_method_args,
+
       /* http-method as TAGS */
       'WEBSOCKET_EVENT_HANDLER',
 
       /* on_execution */
-      async ( resolved_callapi_method )=>{
+      async ( resolved_callapi_method, target_method_args )=>{
 
         // context.logger.reset();
         context.setOptions({ showReport : true, coloredReport:true });
@@ -115,7 +120,6 @@ async function handle_event_of_ws_backend( nargs ) {
          * Invoking the Resolved Method
          */
         const target_method      = resolved_callapi_method.value;
-        const target_method_args = [{websocket,event_name}]; // message.command_value.method_args;
 
         let is_successful = false;
         let result = null;
@@ -204,6 +208,13 @@ async function handle_message_of_ws_backend( nargs ) {
 
   console.log('AAAAAAAAAAA NO2', req.headers );
 
+  const target_method_args = message.command_value.method_args ?? null;
+  if ( target_method_args === null || ! Array.isArray( target_method_args ) ) {
+    console.error( 'Vm11mTSteJYERqmoG6zy9w==', 'invalid target_method_args ' , target_method_args  );
+    throw new Error( 'invalid target_method_args ' + target_method_args );
+  }
+
+
   const respapi_result  =
     await respapi(
       /* callapi_target */
@@ -212,11 +223,14 @@ async function handle_message_of_ws_backend( nargs ) {
       /* callapi_method_path */
       message.command_value.method_path,
 
+      /* callapi_method_args */
+      target_method_args,
+
       /* http-method as TAGS */
       'WEBSOCKET_METHOD',
 
       /* on_execution */
-      async ( resolved_callapi_method )=>{
+      async ( resolved_callapi_method, target_method_args )=>{
 
         // (Mon, 05 Jun 2023 20:07:53 +0900)
         await context_initializer.call( null, context, resolved_callapi_method );
@@ -225,7 +239,6 @@ async function handle_message_of_ws_backend( nargs ) {
          * Invoking the Resolved Method
          */
         const target_method      = resolved_callapi_method.value
-        const target_method_args = message.command_value.method_args;
 
         let is_successful = false;
         let result = null;

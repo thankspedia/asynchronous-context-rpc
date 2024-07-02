@@ -42,6 +42,8 @@ function websocket_callapi_handler( nargs ) {
         value : result,
       };
     }
+  } else if (  1<=method_path.length && method_path[0] === 'toJSON'  ) {
+    return '[ws-callapi]';
   } else {
 
     if ( typeof websocket.send !== 'function' ) {

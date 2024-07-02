@@ -305,6 +305,7 @@ function __create_middleware( contextFactory ) {
           return;
         }
 
+        const callapi_method_args = target_method_args;
 
         /*
          * Create a context object.
@@ -315,6 +316,12 @@ function __create_middleware( contextFactory ) {
          * The procedure to execute before invocation of the method.
          */
         async function context_initializer( context, resolved_callapi_method ) {
+
+          // The following two lines came from on_execution().
+          // (Tue, 02 Jul 2024 15:46:31 +0900)
+          const target_method = resolved_callapi_method.value;
+          session_info.target_method = target_method;
+
           context.logger.output({
             type : 'begin_of_method_invocation',
             info : {
@@ -369,22 +376,22 @@ function __create_middleware( contextFactory ) {
             /* callapi_method_path */
             callapi_method_path,
 
+            /* callapi_method_args */
+            callapi_method_args,
+
             /* http-method as TAGS */
             req.method,
 
             /* on_execution */
             async ( resolved_callapi_method )=>{
-              const target_method = resolved_callapi_method.value
-
-              session_info.target_method = target_method;
-
               // (Mon, 05 Jun 2023 20:07:53 +0900)
               await context_initializer.call( null, context, resolved_callapi_method );
 
+              const target_method = resolved_callapi_method.value;
               /*
                * Invoking the Resolved Method
                */
-              return await (context.executeTransaction( target_method, ... target_method_args ));
+              return await (context.executeTransaction( target_method, ... callapi_method_args ));
             },
           );
 
