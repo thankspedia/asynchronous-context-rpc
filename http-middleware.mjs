@@ -270,16 +270,15 @@ function __create_middleware( contextFactory ) {
         if ( callapi_method_path.length === 0 ) {
           res.status(404).json({status:'error', reason : 'not found' } ).end();
 
-
           // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
           // (async()=>{
           //   console.log(LOG_PREFIX,'http result:', 404 );
           // })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
           // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
-          done = true;
 
           // Abort the process.
+          done = true;
           return;
         }
 
@@ -300,8 +299,8 @@ function __create_middleware( contextFactory ) {
           // 8) Send the generated response.
           res.status(400).json( createErroneous( new Error('found malformed formatted data in body' ))).end();
 
-          done = true;
           // Abort the process.
+          done = true;
           return;
         }
 
@@ -357,10 +356,13 @@ function __create_middleware( contextFactory ) {
           /*
            * Note that http-middleware is the only module which specifies autoCommit === true as default.
            */
+
+          context?.logger?.reset();
         }
 
         // (Mon, 05 Jun 2023 20:07:53 +0900)
         // context.contextInitializers.unshift( );
+
 
 
         /*
@@ -485,7 +487,6 @@ function __create_middleware( contextFactory ) {
           // res.status( status_code ).json( result ).end();
           respond( res );
           // <<< MODIFIED (Mon, 31 Jul 2023 17:27:12 +0900)
-          done = true;
 
 
           // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
@@ -498,6 +499,7 @@ function __create_middleware( contextFactory ) {
           // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
 
           // Abort the process.
+          done = true;
           return;
         }
 
@@ -519,6 +521,7 @@ function __create_middleware( contextFactory ) {
         }
 
       } finally {
+        console.log('aa');
         try {
           if ( ! done ) {
             console.error( 'http-middleware detected an unexpected internal server error', 'v83dIlsq4' );
