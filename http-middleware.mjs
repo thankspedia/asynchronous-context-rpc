@@ -18,6 +18,56 @@ export const MSG_SUCCEEDED   = 'succeeded';
 export const MSG_ERROR       = 'error';
 
 
+
+export const create_console_options = ()=>({
+  ignoreErrors : true,
+  colorMode   : 'auto',
+  groupIndentation : 2,
+  inspectOptions : {
+    showHidden : false,
+    depth : null,
+    // colors : true,
+    customInspect : true,
+    showProxy : false,
+    maxArrayLength : null,
+    maxStringLengtha : null,
+    breakLength : 400,
+    compact : true,
+    sorted : false,
+    getters:  false,
+    numericSeparator : false,
+  },
+});
+
+export const create_logger_console = (stdout,stderr)=>{
+  const Console = console.Console;
+  return new Console({
+    stdout,
+    stderr,
+    ...(create_console_options()),
+  });
+};
+
+const http_middleware_console = create_logger_console( process.stdout, process.stderr );
+
+const output_log = (status,code, value = {} )=>{
+  http_middleware_console.error({
+    status,
+    code,
+    ...value,
+  });
+};
+
+const output_error = (status,code, value ={} )=>{
+  http_middleware_console.error({
+    status,
+    code,
+    ...value,
+  });
+};
+
+
+
 function createSuccessful(value) {
   const status = MSG_SUCCEEDED;
   return {
@@ -209,11 +259,15 @@ function parse_request_body( text_request_body ) {
   try {
     return JSON.parse( text_request_body );
   } catch ( err ) {
-    console.error( 'parse_request_body : *** ERROR ***',  err, text_request_body );
+    output_error( 'INV', 'SCODE98', { message : 'parse_request_body : *** ERROR ***',  err, text_request_body } );
     throw new Error( 'JSON error',  { cause : err } );
   }
 }
 
+//
+// this doesn't seem to work properly; this is probably not tested.
+// Wed, 03 Jul 2024 16:34:04 +0900
+//
 function parse_query_parameter( query ) {
   const p = new URLSearchParams( query );
   p.sort();
@@ -239,6 +293,61 @@ const get_authentication_token = (req)=>{
   }
 };
 
+
+/*
+ * The procedure to execute before invocation of the method.
+ */
+
+// VASTLY MODIFIED ON (Mon, 05 Jun 2023 20:07:53 +0900)
+
+const create_on_before_execution = ( session_info, request )=>{
+  return (
+    async function on_before_execution( resolved_callapi_method, callapi_method_args ) {
+      const context  =  resolved_callapi_method.callapi_target;
+
+      // The following two lines came from on_execution().
+      // (Tue, 02 Jul 2024 15:46:31 +0900)
+      const target_method = resolved_callapi_method.value;
+
+      context.logger.output({
+        type : 'begin_of_method_invocation',
+        resolved_callapi_method,
+      });
+
+      // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+      // (async()=>{
+      //   console.log( 'sZc3Uifcwh0',  resolved_callapi_method );
+      // })();
+      // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
+
+      // 4) get the current authentication token.
+      if ( 'set_user_identity' in context ) {
+        const authentication_token = get_authentication_token( request );
+
+        // (Wed, 07 Sep 2022 20:13:01 +0900)
+        await context.set_user_identity( authentication_token );
+      }
+
+      set_default_context_options(
+        context,
+        resolved_callapi_method,
+        {
+          // Specify `autoConnect` === true explicitly. (Wed, 17 Jan 2024 13:47:51 +0900)
+          // Rather specify `autoCommit` === true explicitly. (Wed, 15 May 2024 16:51:00 +0900)
+          autoCommit : true,
+        }
+      );
+      /*
+       * Note that http-middleware is the only module which specifies autoCommit === true as default.
+       */
+
+      context?.logger?.reset();
+    }
+  )
+}
+
+
+
 function __create_middleware( contextFactory ) {
   // the arguments are already validated in `create_middleware` function.
 
@@ -255,11 +364,17 @@ function __create_middleware( contextFactory ) {
       const callapi_method_path =
         split_pathname_to_callapi_method_path( urlobj ).map( filter_property_name );
 
-      session_info.http_pathname              = urlobj.pathname;
-      session_info.http_query_parameter       = { ...urlobj.query };
-      session_info.http_request_method        = req.method;
-      session_info.target_method              = null;
-      session_info.target_method_args         = null;
+      session_info.http_request_pathname         = urlobj.pathname;
+      session_info.http_request_query_parameter  = { ...urlobj.query };
+      session_info.http_request_method           = req.method;
+
+      session_info.target_method                 = null;
+      session_info.target_method_args            = null;
+
+      const logging = {
+        log  : null,
+        path : req.url,
+      };
 
       try {
 
@@ -268,20 +383,19 @@ function __create_middleware( contextFactory ) {
         // will never lower than two.
 
         if ( callapi_method_path.length === 0 ) {
+          output_log('ERR', 'SCODE00' );
           res.status(404).json({status:'error', reason : 'not found' } ).end();
 
           // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
           // (async()=>{
           //   console.log(LOG_PREFIX,'http result:', 404 );
-          // })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
+          // })().catch(err=>output_error(MSG_UNCAUGHT_ERROR,err) );
           // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-
 
           // Abort the process.
           done = true;
           return;
         }
-
 
         /*
          * Preparing the Arguments
@@ -290,12 +404,6 @@ function __create_middleware( contextFactory ) {
         session_info.target_method_args = target_method_args;
 
         if ( ! Array.isArray( target_method_args ) ) {
-          context.logger.output({
-            type  : 'error_occured_before_method_invocation',
-            reason : 'the specified argument is not an array',
-            value : target_method_args,
-          });
-
           // 8) Send the generated response.
           res.status(400).json( createErroneous( new Error('found malformed formatted data in body' ))).end();
 
@@ -311,59 +419,8 @@ function __create_middleware( contextFactory ) {
          */
         context = await contextFactory({});
 
-        /*
-         * The procedure to execute before invocation of the method.
-         */
-        // VASTLY MODIFIED ON (Mon, 05 Jun 2023 20:07:53 +0900)
-        async function on_before_execution( resolved_callapi_method, callapi_method_args ) {
-          const context  =  resolved_callapi_method.callapi_target;
-
-          // The following two lines came from on_execution().
-          // (Tue, 02 Jul 2024 15:46:31 +0900)
-          const target_method = resolved_callapi_method.value;
-          session_info.target_method = target_method;
-
-          context.logger.output({
-            type : 'begin_of_method_invocation',
-            info : {
-              ...session_info,
-            }
-          });
-
-          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-          // (async()=>{
-          //   console.log( 'sZc3Uifcwh0',  resolved_callapi_method );
-          // })();
-          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-
-          // 4) get the current authentication token.
-          if ( 'set_user_identity' in context ) {
-            const authentication_token = get_authentication_token( req );
-
-            // (Wed, 07 Sep 2022 20:13:01 +0900)
-            await context.set_user_identity( authentication_token );
-          }
-
-          set_default_context_options(
-            context,
-            resolved_callapi_method,
-            {
-              // Specify `autoConnect` === true explicitly. (Wed, 17 Jan 2024 13:47:51 +0900)
-              // Rather specify `autoCommit` === true explicitly. (Wed, 15 May 2024 16:51:00 +0900)
-              autoCommit : true,
-            }
-          );
-          /*
-           * Note that http-middleware is the only module which specifies autoCommit === true as default.
-           */
-
-          context?.logger?.reset();
-        }
-
-        // (Mon, 05 Jun 2023 20:07:53 +0900)
-        // context.contextInitializers.unshift( );
-
-
+        const invoke_logger_output = ()=>{
+        };
 
         /*
          * Resolving Method
@@ -388,65 +445,56 @@ function __create_middleware( contextFactory ) {
 
             /* event_handlers */
             {
-              on_before_execution,
+              on_before_execution : create_on_before_execution( session_info, req ),
             }
           );
 
+        switch ( respapi_result.status ) {
+          case 'found' :
+          case 'succeeded' :
+            context?.logger?.reportResult( true );
+            break;
+          default :
+            context?.logger?.reportResult( false );
+            break;
+        }
 
-        if ( respapi_result.status !== 'found' ) {
-          /*
-           * Process errors from callapi.js
-           */
-          context.logger.output({ type  : 'detected_callapi_error' });
+        /*
+         * Set the filename of the logger to the logging object which is
+         * eventually be shown in console.
+         */
+        logging.log = context.getOptions().logger_output_filename;
 
-          let result = null;
-          let status_code = 100;
-
-          // The method to respond when the result object is a pure JavaScript
-          // object.
-          const respond_as_json = (res)=>{
-            res.status( status_code ).json( result ).end();
-          };
-
-          // The method to respond when the result object is a Buffer object.
-          const respond_as_send = (res)=>{
-            res.status( status_code ).send( result ).end();
-          };
-          // The default method is respond_as_json(); treat the result object
-          // as a JSON object.
-          let respond = respond_as_json;
-
-          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-          // (async ()=>{
-          //   console.log( '0aCa8xD0oY0', respapi_result );
-          // })()
-          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-
-          if ( false ) {
-            // dummy
-          } else if ( respapi_result.status === 'succeeded' ) {
-            // 6) Set the flag `is_successful`
-            is_successful = true;
-            status_code = 200;
-
+        switch ( respapi_result.status ) {
+          case 'found' :
+            // TODO check the specification of respapi; what if it returns 'found'.
+            output_log( 'SUC', 'SCODE01', {...logging});
+            res.status( 200 ).json( createSuccessful( respapi_result.value ) ).end();
+            done = true;
+            return;
+          case 'succeeded' :
             // Check if the result object is a Buffer.
             if ( Buffer.isBuffer( respapi_result.value ) ) {
               // If so, treat it as Buffer; this effectively enables users to
               // send binary data to the client.
-              result = respapi_result.value;
-              respond = respond_as_send;
+              output_log( 'SUC', 'SCODE02', {...logging} );
+              res.status( 200 ).send( respapi_result.value ).end();
+              done = true;
             } else {
               // Otherwise let it treat as the default does.
-              result =
-                createSuccessful( respapi_result.value );
+              output_log( 'SUC', 'SCODE03', {...logging} );
+              res.status( 200 ).json( createSuccessful( respapi_result.value ) ).end();
+              done = true;
             }
-          } else if ( respapi_result.status === 'error' ) {
-            status_code = 200;
-            result = createErroneous( respapi_result.value );
-
-          } else if ( respapi_result.status === 'not_found' ) {
-            status_code = 404;
-            result = {
+            return;
+          case 'error' :
+            output_log( 'ERR', 'SCODE04' , {...logging});
+            res.status( 200 ).json( createErroneous( respapi_result.value ) ).end();
+            done = true;
+            return;
+          case 'not_found' :
+            output_log( 'INV', 'SCODE05', {...logging} );
+            res.status( 404 ).json({
               status:'error',
               value:{
                 status_code,
@@ -454,146 +502,80 @@ function __create_middleware( contextFactory ) {
                 ...session_info,
                 ...respapi_result,
               },
-            };
-          } else if ( respapi_result.status === 'forbidden' ) {
-            status_code = 403;
-            result = {
-              status:'error',
-              value:{
-                status_code,
-                reason : 'Forbidden',
-                ...session_info,
-                ...respapi_result,
-              },
-            };
-          } else {
-            status_code = 500,
-            result = {
-              status:'error',
-              value:{
-                status_code,
-                reason : 'Internal Server Error',
-                ...session_info,
-                ...respapi_result,
-              },
-            };
-          }
-
-          // 7) Send the generated response.
-
-          // The Logging Series No.1
-
-          // >>> MODIFIED (Mon, 31 Jul 2023 17:27:12 +0900)
-          // res.status( status_code ).json( result ).end();
-          respond( res );
-          // <<< MODIFIED (Mon, 31 Jul 2023 17:27:12 +0900)
-
-
-          // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-          // // The Logging Series No.2
-          // context.logger.output({ type  : 'the_result_of_method_invocation', ...result, });
-          // // The Logging Series No.3
-          // (async()=>{
-          //   console.log( LOG_PREFIX, 'http result:', result );
-          // })().catch(err=>console.error(MSG_UNCAUGHT_ERROR,err) );
-          // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-
-          // Abort the process.
-          done = true;
-          return;
-        }
-
-      } catch ( err ) {
-        /*
-         * Processing an Unexpected Error
-         */
-        console.error( 'http-middleware detected an error', '6qbDKEbt6Y', err );
-
-        try {
-          // 8) Send the generated response.
-          res.status(500).json( createErroneous( err ) ).end();
-
-          done = true;
-          // Abort the process.
-          return;
-        } catch (err) {
-          console.error( 'http-middleware detected an internal error', 'pCzB87JiGgo', err );
-        }
-
-      } finally {
-        console.log('aa');
-        try {
-          if ( ! done ) {
-            console.error( 'http-middleware detected an unexpected internal server error', 'v83dIlsq4' );
-            if ( context ) {
-              context.logger.output(
-                {
-                  type  : 'double_unexpected_error',
-                  value : null,
-                }
-              );
-            }
-            res.status(500).json({
-              status : 'error',
-              value : {
-                status_code : 500,
-                reason : 'Unexpected Internal Server Error',
-              },
             }).end();
-            done=true;
+            done= true;
+            return;
+          case 'forbidden' :
+            output_log( 'INV', 'SCODE06' , {...logging});
+            res.status( 403 ).json(
+              {
+                status:'error',
+                value:{
+                  status_code,
+                  reason : 'Forbidden',
+                  ...session_info,
+                  ...respapi_result,
+                },
+              }
+            ).end();
+            done = true;
+            return;
+
+          default:
+            output_log( 'INV', 'SCODE07' , {...logging});
+            res.status( 403 ).json(
+              {
+                status:'error',
+                value:{
+                  status_code,
+                  reason : 'Forbidden',
+                  ...session_info,
+                  ...respapi_result,
+                },
+              }
+            ).end();
+            done = true;
+            return;
+        }
+      } catch ( err ) {
+        if ( done ) {
+          if ( res.writableEnded ) {
+            output_error( 'FAI', 'SCODE08', {...logging, message: 'Error(done=true,writable-ended=true)', err } );
+          } else {
+            output_error( 'FAI', 'SCODE09', {...logging, message: 'Error(done=true,writable-ended=false)', err } );
+            res.status(500).json( createErroneous( err ) ).end();
           }
-        } catch ( err ) {
+        } else {
           try {
-            console.error( 'http-middleware detected a double unexpected internal server error', 'v83dIlsq4', err );
-            if ( context ) {
-              context.logger.output(
-                {
-                  type  : 'double_unexpected_error',
-                  value : createErroneous( err ),
-                }
-              );
+            if ( res.writableEnded ) {
+              output_error( 'FAI', 'SCODE10', {...logging, message: 'Error(done=false,writable-ended=true)', err } );
+            } else {
+              // 8) Send the generated response.
+              output_error( 'FAI','SCODE11', {...logging, message: 'Error(done=false,writable-ended=false)', err } );
+              res.status(500).json( createErroneous( err ) ).end();
+              done = true;
+              // Abort the process.
+              return;
+
             }
           } catch (err) {
-            console.error( 'http-middleware detected a triple unexpected internal server error', 'v83dIlsq4', err );
+            output_error( 'FAI', 'SCODE12', {...logging, message:'detected an internal error', err });
           }
         }
-
-        // 9) close the indentation of the nested log.
+      } finally {
         try {
-          if ( context ) {
-            context.logger.output({
-              type: 'end_of_method_invocation',
-              ...session_info,
-            });
-          }
-        } catch ( err ) {
-          console.error( 'http-middleware detected an unexpected internal server error', 'v83dIlsq4', err );
-        }
-
-        // 10) Output the log of the execution.
-        try {
-          if ( context != null ) {
-            context.logger.reportResult( is_successful ?? false )
-              // << DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-              // .then( err=>{console.log('logging finished');console.error('logging2',err)} )
-              // >> DISABLED Mon, 01 Jul 2024 18:33:57 +0900
-              .catch(err=>{console.error(MSG_UNCAUGHT_ERROR);console.error(err)});
-          }
-        } catch ( err ) {
-          console.error( 'http-middleware detected an unexpected internal server error', 'v83dIlsq4', err );
-        }
-
-        try {
-          if ( ! done ) {
+          if ( ! done && res.writableEnded ) {
             next();
           }
         } catch (err) {
-          console.error( 'http-middleware detected a final error', err );
+          output_error( 'FAI', 'SCODE99', {...logging, message:'http-middleware detected a final error', err } );
         }
       }
     }
   );
 }
+
+
 
 function create_middleware( contextFactory ) {
   if ( contextFactory === undefined || contextFactory === null ) {
@@ -620,7 +602,11 @@ function create_middleware( contextFactory ) {
   router.all( '/(.*)', __create_middleware( contextFactory ) );
   router.all( '(.*)', function ( req, res, next ) {
     // console.trace('(.*)');
-    res.status(404).json({status:'error', reason : 'not found' } ).end();
+    if ( ! res.writableEnded ) {
+      res.status(404).json({status:'error', reason : 'not found' } ).end();
+    } else {
+
+    }
   });
   return router;
 }
