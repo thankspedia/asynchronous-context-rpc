@@ -32,7 +32,11 @@ Hello.defineMethod(
      * (Fri, 16 Jun 2023 14:01:43 +0900)
      */
 
-    this.logger.output( 'yes, how_are_you', this.frontend );
+    this.logger.output({
+      type : 'greeting',
+      message : 'yes, how_are_you',
+      frontend : this.frontend,
+    });
 
     await this.frontend.fine_thank_you( a+1, b+1, c+1 );
 
