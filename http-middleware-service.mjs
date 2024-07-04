@@ -1,3 +1,4 @@
+const DEBUG = false;
 
 import { filenameOfSettings, asyncReadSettings } from 'asynchronous-context/settings' ;
 import { dotenvFromSettings } from 'asynchronous-context/env';

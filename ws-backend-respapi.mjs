@@ -1,3 +1,4 @@
+const DEBUG = false;
 
 import { WebSocketServer } from 'ws' ;
 import { parse } from 'url';
@@ -39,12 +40,12 @@ export { create_websocket_upgrader as create_websocket_upgrader };
 
 const handle_multi_path_upgrade = ( mapper, request, socket, head )=>{
   const { pathname } = parse( request.url );
-  console.log( 'handle_upgrade : ', pathname );
+  if ( DEBUG ) console.log( 'handle_upgrade : ', pathname );
   if ( pathname in mapper ) {
-    console.log( `handle_upgrade on [${pathname}]` );
+    if ( DEBUG ) console.log( `handle_upgrade on [${pathname}]` );
     mapper[ pathname ]( request, socket, head )
   } else {
-    console.log( `failed to 'handle_upgrade' on [${pathname}]` );
+    console.warn( `failed to 'handle_upgrade' on [${pathname}]` );
     socket.destroy();
   }
 };
@@ -88,7 +89,7 @@ async function handle_event_of_ws_backend( nargs ) {
     req                = null,
   } = nargs;
 
-  console.log('LOG', 'handle_event_of_ws_backend', event_handler_name );
+  if ( DEBUG ) console.log('LOG', 'handle_event_of_ws_backend', event_handler_name );
 
   const target_method_args = [{websocket,event_name}]; // message.command_value.method_args;
 
@@ -120,7 +121,7 @@ async function handle_event_of_ws_backend( nargs ) {
       },
     );
 
-  // console.log( 'handle_event_of_ws_backend : %s', respapi_result );
+  if ( DEBUG ) console.log( 'handle_event_of_ws_backend : %s', respapi_result );
 
   /*
    * Call the specified event handler on the event handler object.
@@ -178,17 +179,19 @@ async function handle_message_of_ws_backend( nargs ) {
    */
   async function on_before_execution( resolved_callapi_method, callapi_method_args ) {
     const context = resolved_callapi_method.callapi_target;
-    context.logger.output({
-      type : 'begin_of_method_invocation',
-      info : {
-        resolved_callapi_method
-      }
-    });
-    console.log( 'dGNndxPMXh',  resolved_callapi_method );
+    // context.logger.output({
+    //   type : 'begin_of_method_invocation',
+    //   info : {
+    //     resolved_callapi_method
+    //   }
+    // });
+
+    if ( DEBUG ) console.log( 'dGNndxPMXh',  resolved_callapi_method );
+
     set_default_context_options( context, resolved_callapi_method, {} );
   }
 
-  console.log('AAAAAAAAAAA NO2', req.headers );
+  if ( DEBUG ) console.log( 'Y3DKBQkz2P4QfF', 'AAAAAAAAAAA NO2', req.headers );
 
   const target_method_args = message.command_value.method_args ?? null;
   if ( target_method_args === null || ! Array.isArray( target_method_args ) ) {
@@ -215,8 +218,8 @@ async function handle_message_of_ws_backend( nargs ) {
       },
     );
 
-  console.log( 'received No.1: %s', data );
-  console.log( 'respapi_result', respapi_result );
+  if ( DEBUG ) console.log( 'received No.1: %s', data );
+  // console.log( 'respapi_result', respapi_result );
   // console.log( 'context.hello_world', await context.hello_world() );
 
   return context
@@ -259,7 +262,7 @@ async function on_init_websocket_of_ws_backend( nargs ) {
 
   const context = await create_context();
 
-  console.log( "LOG" , "on_init_websocket_of_ws_backend" );
+  if ( DEBUG ) console.log( "LOG" , "on_init_websocket_of_ws_backend" );
 
   /*
    * Initialize the backend context object.
@@ -277,7 +280,7 @@ async function on_init_websocket_of_ws_backend( nargs ) {
     websocket,
     logger : context.logger,
   });
-  console.log( 'context.frontend' , context.frontend );
+  if ( DEBUG ) console.log( 'context.frontend' , context.frontend );
 
   /*
    * The frontend context object above was tested by `ws-backend-respapi-test.js`
@@ -306,7 +309,7 @@ async function on_init_websocket_of_ws_backend( nargs ) {
 
   websocket.on( 'close', async (data)=>{
     try {
-      console.log( 'websocket on_close' );
+      if ( DEBUG ) console.log( 'websocket on_close' );
       await handle_event_of_ws_backend(
         {
           event_name         : 'close',

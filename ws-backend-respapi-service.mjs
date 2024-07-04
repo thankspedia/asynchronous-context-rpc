@@ -1,3 +1,4 @@
+const DEBUG = false;
 
 import express    from 'express';
 import cors       from  'cors';
@@ -19,6 +20,7 @@ import {
 
 import { typecast, schema  } from 'vanilla-schema-validator' ;
 import { typesafe_function } from 'runtime-typesafety' ;
+
 
 const create_service_factory = ( create_app, ports, handle_upgrade )=>{
   create_app = typesafe_function( create_app, {
@@ -46,25 +48,25 @@ const create_service_factory = ( create_app, ports, handle_upgrade )=>{
                     const server = e.listen(
                       port,
                       (e)=>{
-                        console.log( '[ws-backend-respapi-service] opened', 'C3FXWHjYwU0' );
+                        if ( DEBUG ) console.log( '[ws-backend-respapi-service]', 'C3FXWHjYwU0', 'socket.open' );
                       }
                     );
 
                     server.on( 'error', (e)=>{
-                      console.error( 'server-error', e );
+                      if ( DEBUG ) console.error( 'server-error', e );
                     })
 
                     server.on( 'connection', (socket)=>{
-                      console.log( 'sZYTMC4A0I', 'connection');
+                      if ( DEBUG ) console.log( '[ws-backend-respapi-service]', 'sZYTMC4A0I', 'connection');
 
                       sockets.add( socket );
 
                       socket.on( 'close', ()=>{
-                        console.log( 'sZYTMC4A0I', 'socket.close()' );
+                        if ( DEBUG ) console.log('[ws-backend-respapi-service]', 'sZYTMC4A0I', 'socket.close()' );
                       })
 
                       socket.on( 'data', ()=>{
-                        console.log( 'sZYTMC4A0I', 'socket.data()' );
+                        if ( DEBUG ) console.log( '[ws-backend-respapi-service]' ,'sZYTMC4A0I', 'socket.data()' );
                       })
                     });
                     server.on( 'upgrade', handle_upgrade );
@@ -73,7 +75,7 @@ const create_service_factory = ( create_app, ports, handle_upgrade )=>{
                 )
               )
             );
-            console.log( '[ws-backend-respapi-service] service is started', 'nTPf8R8RExE'  );
+            if ( DEBUG ) console.log( '[ws-backend-respapi-service] service is started', 'nTPf8R8RExE'  );
           },
 
           stop() {
@@ -82,14 +84,14 @@ const create_service_factory = ( create_app, ports, handle_upgrade )=>{
                 if ( e ) {
                   console.error( '[ws-backend-respapi-service] closed(with error)', e, 'C3FXWHjYwU0' );
                 } else {
-                  console.log( '[ws-backend-respapi-service] closed', 'C3FXWHjYwU0' );
+                  if ( DEBUG ) console.log( '[ws-backend-respapi-service] closed', 'C3FXWHjYwU0' );
                 }
               }
             ));
             services.length = 0;
-            console.log('nTPf8R8RExE', {services} );
+            if ( DEBUG ) console.log('nTPf8R8RExE', {services} );
 
-            console.log( '[ws-backend-respapi-service] closed 2', 'C3FXWHjYwU0' );
+            if ( DEBUG ) console.log( '[ws-backend-respapi-service] closed 2', 'C3FXWHjYwU0' );
             for ( const i of sockets.values() ) {
               i.destroy();
             }

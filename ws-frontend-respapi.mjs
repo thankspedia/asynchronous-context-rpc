@@ -2,6 +2,8 @@
 import { respapi } from './respapi.mjs' ;
 import { schema, trace_validator } from 'vanilla-schema-validator' ;
 
+const DEBUG = false;
+
 const t_handle_message = schema.compile`
   object(
     context   : object(),
@@ -26,7 +28,7 @@ import { createContext } from 'asynchronous-context-rpc/ws-frontend-callapi-cont
 
 
 async function handle_on_message_of_ws_frontend_respapi( nargs ) {
-  console.log( 'handle_on_message_of_ws_frontend_respapi', nargs );
+  if ( DEBUG ) console.log( 'handle_on_message_of_ws_frontend_respapi', nargs );
   {
     const info = trace_validator( t_handle_message, nargs );
     if ( ! info.value ) {
@@ -40,7 +42,7 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
     message,
   } = nargs;
 
-  console.log( 'handle_on_message_of_ws_frontend_respapi', nargs );
+  if ( DEBUG ) console.log( 'handle_on_message_of_ws_frontend_respapi', nargs );
 
   const message_data = JSON.parse( message?.data?.toString() ?? '{}' );
   {
@@ -78,10 +80,10 @@ async function handle_on_message_of_ws_frontend_respapi( nargs ) {
   if ( respapi_result.status  === 'error' ) {
     console.error( 'error', respapi_result.value );
     console.error( 'received No.1: %s', message?.data );
-    console.error( 'respapi_result', respapi_result );
+    // console.error( 'respapi_result', respapi_result );
   } else {
     console.log( 'received No.1: %s', message?.data );
-    console.log( 'respapi_result', respapi_result );
+    // console.log( 'respapi_result', respapi_result );
   }
 
   return context
@@ -180,13 +182,13 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   interval : 1000,
 
   on_initialization : function() {
-    console.log( 'App', 'on_initialization' );
+    if ( DEBUG ) console.log( 'App', 'on_initialization' );
     this.frontend_context = this.configs.frontend_context_factory.call(this);
     this.frontend_context.is_open = false;
   },
 
   on_finalization : function() {
-    console.log( 'App', 'on_finalization' );
+    if ( DEBUG ) console.log( 'App', 'on_finalization' );
     this.frontend_context.is_open = false;
   },
 
@@ -197,20 +199,20 @@ export const tether_default_configs_of_ws_frontend_respapi = {
    * (Wed, 31 Jan 2024 11:40:45 +0900)
    */
   on_open : async function () {
-    console.log( 'App', 'on_open' );
+    if ( DEBUG ) console.log( 'App', 'on_open' );
     try {
-      console.log( 'WebSocket', 'opened' );
+      if ( DEBUG ) console.log( 'WebSocket', 'opened' );
 
       const { context:backend_context } =  await createContext({
         websocket : this.current_websocket,
         logger    : this.frontend_context.logger,
       });
 
-      console.log( '[ws-reconnector] proc 2' , backend_context );
+      if ( DEBUG ) console.log( '[ws-reconnector] proc 2' , backend_context );
 
       this.backend_context = backend_context;
 
-      console.log( '[ws-reconnector] proc 3' , this.frontend_context );
+      if ( DEBUG ) console.log( '[ws-reconnector] proc 3' , this.frontend_context );
 
       this.frontend_context.backend   = this.backend_context;
       this.frontend_context.websocket = this.current_websocket;
@@ -238,7 +240,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   },
 
   on_close : async function() {
-    console.log( 'App', 'on_close' );
+    if ( DEBUG ) console.log( 'App', 'on_close' );
 
     // Set `is_open` property before calling the event handler.
     this.frontend_context.is_open   = false;
@@ -260,7 +262,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   },
 
   on_error : async function (...args) {
-    console.log( 'App', 'on_error' );
+    if ( DEBUG ) console.log( 'App', 'on_error' );
 
     // Set `is_open` property before calling the event handler.
     this.frontend_context.is_open   = false;
@@ -281,7 +283,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
   },
 
   on_message : async function( message ) {
-    console.log( 'App', 'on_message' );
+    if ( DEBUG ) console.log( 'App', 'on_message' );
     return handle_on_message_of_ws_frontend_respapi({
       context   : this.frontend_context,
       websocket : this.current_websocket,

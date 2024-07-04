@@ -1,3 +1,4 @@
+const STDOUT_LOG_ID = '[ws-frontend-respapi] stdout >> ';
 
 // require( 'dotenv' ).config();
 // MODIFIED (Wed, 27 Sep 2023 13:28:23 +0900)
@@ -56,10 +57,10 @@ describe( async ()=>{
         env: Object.assign({},process.env,{})
       });
       service.stdout.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stdout >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
       service.stderr.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stderr >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
     } catch (e) {
       console.error(e);
@@ -135,14 +136,14 @@ describe( async ()=>{
     console.log( 'websocket.close()');
 
     try {
-      console.log( 'shutdown1' );
+      console.log( `${import.meta.url} shutdown1` );
       websocket.close();
     } catch ( e) {
       console.log(e);
     }
 
     try {
-      console.log( 'shutdown2' );
+      console.log( `${import.meta.url} shutdown2` );
       // test_state.__service.shutdown();
     } catch ( e) {
       console.log(e);

@@ -1,3 +1,5 @@
+const STDOUT_LOG_ID = '[http-middleware] stdout >> ';
+
 // require( 'dotenv' ).config();
 // MODIFIED (Wed, 27 Sep 2023 13:28:23 +0900)
 import   assert                                  from   'node:assert/strict'  ;
@@ -27,6 +29,7 @@ const sleep = (t)=>(new Promise((resolve,reject)=>{
 }));
 let service = null;
 
+
 describe( 'http-middleware-test', async ()=>{
   await before( async ()=>{
     console.warn('BEFORE');
@@ -37,10 +40,10 @@ describe( 'http-middleware-test', async ()=>{
         env: Object.assign({},process.env,{})
       });
       service.stdout.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stdout >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
       service.stderr.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stderr >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
     } catch (e) {
       console.error(e);

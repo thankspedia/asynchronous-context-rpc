@@ -1,3 +1,5 @@
+const LOG_ID = `[start-test.mjs]`;
+const STDOUT_LOG_ID = '[start-test.mjs] stdout >> ';
 
 // require( 'dotenv' ).config();
 // MODIFIED (Wed, 27 Sep 2023 13:28:23 +0900)
@@ -59,7 +61,7 @@ let service = null;
 describe( 'it as', async ()=>{
 
   await before( async ()=>{
-    console.warn('BEFORE');
+    console.warn( LOG_ID, 'BEFORE');
     try {
       service = spawn( 'start-service', {
         // detached:true,
@@ -67,28 +69,28 @@ describe( 'it as', async ()=>{
         env: Object.assign({},process.env,{})
       });
       service.stdout.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stdout >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
       service.stderr.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stderr >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
     } catch (e) {
-      console.error(e);
+      console.error( LOG_ID, e);
     }
 
     await sleep( 1000 );
-    console.error( 'BEFORE', service != null );
+    console.error( LOG_ID,  'BEFORE', service != null );
     await sleep( 1000 );
   });
 
   await after(  async ()=>{
-    console.warn('AFTER');
+    console.warn( LOG_ID, 'AFTER');
     try{
       service.kill();
       service.unref();
-      console.error( 'DISCONNECTED', service.pid );
+      console.error( LOG_ID,  'DISCONNECTED', service.pid );
     } catch(e){
-      console.error(e);
+      console.error( LOG_ID, e);
     }
     await sleep( 1000 );
   });
@@ -110,7 +112,7 @@ describe( 'it as', async ()=>{
         const context = createContext();
         await (context.hello2.world.foo.bar.baz({hello:'hello world'}));
       } catch ( e ) {
-        console.log( 'expected exception', e );
+        console.log( LOG_ID,  'expected exception', e );
         throw new Error( 'error', { cause : e } );
       }
 
@@ -124,7 +126,7 @@ describe( 'it as', async ()=>{
         const result = await context.multiple(1,2,3,4);
         assert.deepEqual( result, [1,2,3,4]);
       } catch ( e ) {
-        console.error( 'unexpected exception', e );
+        console.error( LOG_ID,  'unexpected exception', e );
         throw new Error( 'error', { cause : e } );
       }
     });
@@ -137,7 +139,7 @@ describe( 'it as', async ()=>{
     const ws = new WebSocket( 'ws://localhost:3959/foo' );
 
     ws.on('error', (...args)=>{
-      console.error('error!', ...args );
+      console.error( LOG_ID, 'error!', ...args );
       reject('foo');
     });
 
@@ -155,17 +157,17 @@ describe( 'it as', async ()=>{
 
     ws.on( 'message', function message(__data) {
       const data = JSON.parse( __data.toString() );
-      console.log( 'received a message', data );
+      console.log( LOG_ID,  'received a message', data );
 
       if ( data.message === 'shutdown immediately' ) {
-        console.log( data );
-        console.log( 'okay,sir' );
+        console.log( LOG_ID, data );
+        console.log( LOG_ID, 'okay,sir' );
         ws.close();
         resolve( 'okay,sir' );
       }
     });
 
-    console.log(
+    console.log( LOG_ID,
       await new Promise((__resolve,__reject)=>{
         resolve.set( __resolve );
         reject .set( __reject  );

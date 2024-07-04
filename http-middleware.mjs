@@ -497,10 +497,10 @@ function __create_middleware( contextFactory ) {
             res.status( 404 ).json({
               status:'error',
               value:{
-                status_code,
+                status_code : 404,
                 reason : 'Not Found',
-                ...session_info,
-                ...respapi_result,
+                // ...session_info,
+                // ...respapi_result,
               },
             }).end();
             done= true;
@@ -511,10 +511,10 @@ function __create_middleware( contextFactory ) {
               {
                 status:'error',
                 value:{
-                  status_code,
+                  status_code : 403,
                   reason : 'Forbidden',
-                  ...session_info,
-                  ...respapi_result,
+                  // ...session_info,
+                  // ...respapi_result,
                 },
               }
             ).end();
@@ -527,10 +527,10 @@ function __create_middleware( contextFactory ) {
               {
                 status:'error',
                 value:{
-                  status_code,
+                  status_code : 403,
                   reason : 'Forbidden',
-                  ...session_info,
-                  ...respapi_result,
+                  // ...session_info,
+                  // ...respapi_result,
                 },
               }
             ).end();

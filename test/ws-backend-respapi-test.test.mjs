@@ -1,3 +1,4 @@
+const STDOUT_LOG_ID = '[ws-backend-respapi-test.mjs] stdout >> ';
 // require( 'dotenv' ).config();
 // MODIFIED (Wed, 27 Sep 2023 13:28:23 +0900)
 
@@ -13,6 +14,8 @@ import "./common.mjs" ;
 
 filenameOfSettings( 'ws-backend-respapi-test-context-factory.settings.json' );
 dotenvFromSettings();
+
+const LOG_ID = `[backend-respapi.test.mjs]`;
 
 let testService = null;
 
@@ -42,7 +45,7 @@ const filter = (v, allowed_fields =[ 'reason','status_code'])=>({
 
 describe( 'http-middleware-test', async ()=>{
   await before( async ()=>{
-    console.warn('BEFORE');
+    console.warn( LOG_ID, 'BEFORE');
     try {
       service = spawn( 'start-ws-service', {
         // detached:true,
@@ -50,28 +53,28 @@ describe( 'http-middleware-test', async ()=>{
         env: Object.assign({},process.env,{})
       });
       service.stdout.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stdout >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
       service.stderr.on('data', (data)=>{
-        console.log( data.toString().trim().replaceAll( /^/gm, 'stderr >> ' ) );
+        console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
     } catch (e) {
-      console.error(e);
+      console.error( LOG_ID, e);
     }
 
     await sleep( 1000 );
-    console.error( 'BEFORE', service != null );
+    console.error( LOG_ID,  'BEFORE', service != null );
     await sleep( 1000 );
   });
 
   await after(  async ()=>{
-    console.warn('AFTER');
+    console.warn( LOG_ID, 'AFTER');
     try{
       service.kill();
       service.unref();
-      console.error( 'DISCONNECTED', service.pid );
+      console.error( LOG_ID,  'DISCONNECTED', service.pid );
     } catch(e){
-      console.error(e);
+      console.error( LOG_ID, e);
     }
     await sleep( 1000 );
   });
@@ -83,7 +86,7 @@ describe( 'http-middleware-test', async ()=>{
     const ws = new WebSocket( 'ws://localhost:3953/foo' );
 
     ws.on('error', (...args)=>{
-      console.error('error!', ...args );
+      console.error( LOG_ID, 'error!', ...args );
       reject('foo');
     });
 
@@ -101,17 +104,17 @@ describe( 'http-middleware-test', async ()=>{
 
     ws.on( 'message', function message(__data) {
       const data = JSON.parse( __data.toString() );
-      console.log( 'received a message', data );
+      console.log( LOG_ID,  'received a message', data );
 
       if ( data.message === 'shutdown immediately' ) {
-        console.log( data );
-        console.log( 'okay,sir' );
+        console.log( LOG_ID, data );
+        console.log( LOG_ID, 'okay,sir'  );
         ws.close();
         resolve( 'okay,sir' );
       }
     });
 
-    console.log(
+    console.log( LOG_ID,
       await new Promise((__resolve,__reject)=>{
         resolve.set( __resolve );
         reject .set( __reject  );
