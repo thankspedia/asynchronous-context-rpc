@@ -364,12 +364,16 @@ function __create_middleware( contextFactory ) {
       const callapi_method_path =
         split_pathname_to_callapi_method_path( urlobj ).map( filter_property_name );
 
+
+      session_info.http_client_ip                = req.ip;
       session_info.http_request_pathname         = urlobj.pathname;
       session_info.http_request_query_parameter  = { ...urlobj.query };
       session_info.http_request_method           = req.method;
 
       session_info.target_method                 = null;
       session_info.target_method_args            = null;
+
+      console.log( session_info );
 
       const logging = {
         log  : null,
