@@ -50,6 +50,10 @@ export const create_logger_console = (stdout,stderr)=>{
 
 const http_middleware_console = create_logger_console( process.stdout, process.stderr );
 
+const date_string = (d = new Date() )=>{
+  return d.toISOString();
+};
+
 const output_log = (status,code, value = {} )=>{
   http_middleware_console.error({
     status,
@@ -305,6 +309,9 @@ const create_on_before_execution = ( session_info, request )=>{
     async function on_before_execution( resolved_callapi_method, callapi_method_args ) {
       const context  =  resolved_callapi_method.callapi_target;
 
+      // See `resolved_callapi_method : t_resolved_callapi_method()`
+      context.setOptions({ logger_output_filename_postfix : resolved_callapi_method.callapi_method_path_string });
+
       // The following two lines came from on_execution().
       // (Tue, 02 Jul 2024 15:46:31 +0900)
       const target_method = resolved_callapi_method.value;
@@ -373,7 +380,7 @@ function __create_middleware( contextFactory ) {
       session_info.target_method                 = null;
       session_info.target_method_args            = null;
 
-      console.log( session_info );
+      // console.log( session_info );
 
       const logging = {
         log  : null,
