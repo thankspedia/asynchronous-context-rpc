@@ -163,7 +163,7 @@ function default_cors_origins( origin, callback ) {
 }
 
 
-function loadService( serviceSettings ) {
+function loadService( argv, serviceSettings ) {
   const {
     ports                   = [],
     // cors_origins            = default_cors_origins,
@@ -196,7 +196,7 @@ async function startWsService() {
     async()=>{
       const settings = await asyncReadSettings();
       const serviceSettings = settings?.async_context_websocket_backend ?? {};
-      return loadService( serviceSettings );
+      return loadService( [], serviceSettings );
     };
 
   startService( createService );

@@ -39,7 +39,7 @@ function default_cors_origins( origin, callback ) {
  *   ),
  * )
  */
-const loadService = ( serviceSettings )=>{
+const loadService = ( argv, serviceSettings )=>{
   let {
     ports               = [],
     cors_origins        = 'ALLOW_ALL',
@@ -115,7 +115,7 @@ const startHttpMiddlewareService = ()=>{
     async ()=>{
       const settings         = await asyncReadSettings();
       const serviceSettings  = settings?.async_context_backend ?? {};
-      return loadService( serviceSettings );
+      return loadService( [], serviceSettings );
     };
 
   startService( createService );

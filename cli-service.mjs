@@ -1,44 +1,49 @@
 const DEBUG = false;
 
+import { shutdownDatabaseContext } from 'database-postgresql-context' ;
 import { filenameOfSettings, asyncReadSettings } from 'asynchronous-context/settings' ;
 import { dotenvFromSettings } from 'asynchronous-context/env';
 
 import { startService  }                         from './service-utils.mjs';
 import { loadContextFactory  }                   from './context-factory-loader.mjs' ;
+import repl from 'node:repl';
 
 dotenvFromSettings();
 
 
-async function tbc(f) {
-  console.log( 'tbc(f)', f );
-  const context = await createContext();
-  await context.executeTransaction(f);
-  await context.logger.reportResult(true);
-}
 
-function initializeContext(context) {
-  context.tbc = tbc;
-  context.createContext = createContext;
-}
+async function execute ( createContext, filename ) {
 
-async function execute () {
-  const argv =  process.argv.slice(2);
-  if ( argv.length == 0 ) {
+  async function tbc(fn) {
+    console.log( `execute a specified file ${filename}` );
+    const context = await createContext();
+    await context.executeTransaction(fn);
+    await context.logger.reportResult(true);
+  }
+
+  function initializeContext(context) {
+    context.tbc = tbc;
+    context.createContext = createContext;
+  }
+
+
+  if ( ! filename ) {
     const replInstance = repl.start('> ')
     initializeContext( replInstance.context );
     replInstance.on( 'reset', initializeContext );
 
   } else {
     try {
-      let  f = argv[0];
       try {
-        let ff = (await import('path')).join( (await import( 'process' )).cwd() , f );
-        ff = await import.meta.resolve( ff );
-        f = ff;
+        let full_filename = (await import('path')).join( (await import( 'process' )).cwd() , filename );
+        full_filename = await import.meta.resolve( full_filename );
+        filename = full_filename;
       } catch (e){
-        // f = require('path').join( require( 'process' ).cwd() , f );
+        // filename = require('path').join( require( 'process' ).cwd() , filename );
       }
-      await tbc( ( await import( f ) ).default );
+      await tbc( ( await import( filename ) ).default );
+    } catch (e) {
+      console.error(e);
     } finally {
       shutdownDatabaseContext();
     }
@@ -62,7 +67,7 @@ async function execute () {
  *   ),
  * )
  */
-const loadService = ( serviceSettings )=>{
+const loadService = ( argv, serviceSettings )=>{
   let {
     context_factory     = (()=>{throw new Error('context_factory is not defined')})(),
   } = serviceSettings;
@@ -75,9 +80,10 @@ const loadService = ( serviceSettings )=>{
   return [
     {
       start: async ()=>{
-        execute();
+        execute( createContext, argv.shift() );
       },
       stop : ()=>{
+        shutdownDatabaseContext();
       },
     }
   ];
@@ -90,7 +96,7 @@ const startCliService = ()=>{
     async ()=>{
       const settings         = await asyncReadSettings();
       const serviceSettings  = settings?.async_context_backend ?? {};
-      return loadService( serviceSettings );
+      return loadService( [], serviceSettings );
     };
 
   startService( createService );
