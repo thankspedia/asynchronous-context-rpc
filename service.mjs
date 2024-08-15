@@ -2,10 +2,13 @@
 import { startService, createLoadServiceAfterReadSettings } from './service-utils.mjs';
 import { loadService as httpLoadService }                   from './http-middleware-service.mjs' ;
 import { loadService as wsLoadService   }                   from './ws-backend-respapi-service.mjs' ;
+import { loadService as cliLoadService   }                  from './cli-service.mjs' ;
+
 
 const serviceMap = {
   http : httpLoadService,
-  ws  : wsLoadService,
+  ws   : wsLoadService,
+  cli  : cliLoadService,
 };
 
 const loadService = ( settings )=>{
