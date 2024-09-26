@@ -1,6 +1,6 @@
 import { AsyncContext }            from  'asynchronous-context' ;
 import { set_typesafe_tags }       from  'runtime-typesafety' ;
-import { METHOD_POST } from  'asynchronous-context-rpc/http-middleware.mjs' ;
+import { METHOD_POST, METHOD_GET } from  'asynchronous-context-rpc/http-middleware.mjs' ;
 
 /*
  * duplicated on
@@ -96,6 +96,16 @@ Hello.defineMethod(
   }
 );
 
+Hello.defineMethod(
+  async function hello_request_method_get() {
+    return "THIS IS A RESULT OF REQUEST_METHOD GET";
+  },
+  METHOD_GET,
+  {
+    unprotected_intput : true,
+    unprotected_output : true,
+  }
+);
 
 
 function createContext() {

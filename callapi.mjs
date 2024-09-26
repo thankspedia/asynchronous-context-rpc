@@ -15,7 +15,7 @@ function create_callapi_overrider( args ) {
         throw new Error( `the named argument 'http_method' must be a string` );
       }
     } else {
-      throw new Error( 'this should not happen' );
+      throw new Error( `the named argument 'http_method' must be a string` );
     }
 
     return create_callapi( overriden_args );

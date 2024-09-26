@@ -50,8 +50,7 @@ const sleep = (t)=>(new Promise((resolve,reject)=>{
 
 let service = null;
 
-describe( 'it as', async ()=>{
-
+await describe( 'http-callapi test',{only:true,skip:false}, async ()=>{
   await before( async ()=>{
     console.warn('BEFORE');
     try {
@@ -123,5 +122,51 @@ describe( 'it as', async ()=>{
       }
     });
   });
+
+
+  await it( 'SUC:as override test 01', {only:false,skip:true}, async()=>{
+    await assert.doesNotReject( async()=>{
+      try {
+        const context = createContext();
+        const result = await context.OVERRIDE({http_method:'GET'}).hello_request_method_get();
+        assert.deepEqual( result, "THIS IS A RESULT OF REQUEST_METHOD GET" );
+      } catch ( e ) {
+        console.error( 'unexpected exception', e );
+        throw new Error( 'error', { cause : e } );
+      }
+    });
+  });
+
+  await it( 'ERR:as override test 02', {only:false,skip:false}, async()=>{
+    await assert.rejects( async()=>{
+      try {
+        const context = createContext();
+        const result = await context.OVERRIDE({http_method:'POST'}).hello_request_method_get();
+        assert.deepEqual( result, "THIS IS A RESULT OF REQUEST_METHOD GET" );
+      } catch ( e ) {
+        console.error( 'unexpected exception', e );
+        throw new Error( 'error', { cause : e } );
+      }
+    });
+  });
+
+  await it( 'ERR:as override test 03', {only:true, skip:false}, async()=>{
+    await assert.rejects( async()=>{
+      try {
+        const context = createContext();
+        const result = await context.hello_request_method_get(1,2,3,4);
+        assert.deepEqual( result, "THIS IS A RESULT OF REQUEST_METHOD GET" );
+      } catch ( e ) {
+        console.error( 'unexpected exception', e );
+        throw new Error( 'error', { cause : e } );
+      }
+    });
+  });
+
+
 }).then((e)=>console.log(e,'foo')).catch( (e)=>{console.log(e) });
+
+
+
+
 
