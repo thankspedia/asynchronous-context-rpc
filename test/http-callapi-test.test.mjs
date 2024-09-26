@@ -137,7 +137,7 @@ await describe( 'http-callapi test',{only:true,skip:false}, async ()=>{
     });
   });
 
-  await it( 'ERR:as override test 02', {only:false,skip:false}, async()=>{
+  await it( 'ERR:as override test 02 unmatched request method causes an error', {only:false,skip:false}, async()=>{
     await assert.rejects( async()=>{
       try {
         const context = createContext();
@@ -150,12 +150,48 @@ await describe( 'http-callapi test',{only:true,skip:false}, async ()=>{
     });
   });
 
-  await it( 'ERR:as override test 03', {only:true, skip:false}, async()=>{
+  await it( 'ERR:as override test 03 unmatched request method causes an error; the default method is POST.', {only:false, skip:false}, async()=>{
     await assert.rejects( async()=>{
       try {
         const context = createContext();
         const result = await context.hello_request_method_get(1,2,3,4);
         assert.deepEqual( result, "THIS IS A RESULT OF REQUEST_METHOD GET" );
+      } catch ( e ) {
+        console.error( 'unexpected exception', e );
+        throw new Error( 'error', { cause : e } );
+      }
+    });
+  });
+
+  await it( 'SUC:as override test 04 with arguments ', {only:false, skip:false}, async()=>{
+    await assert.doesNotReject( async()=>{
+      try {
+        const context = createContext();
+        const result = await context.OVERRIDE({http_method:'GET'}).hello_request_method_get(1,2,3,4);
+        assert.deepEqual( result, "THIS IS A RESULT OF REQUEST_METHOD GET" );
+      } catch ( e ) {
+        console.error( 'unexpected exception', e );
+        throw new Error( 'error', { cause : e } );
+      }
+    });
+  });
+
+  await it( 'SUC: serialize arguments in request method get : 1 ', {only:true, skip:false}, async()=>{
+    await assert.doesNotReject( async()=>{
+      try {
+        const context = createContext();
+        const args = [
+          {
+            a:[ 'foo','bar',],
+            b:{ foo:'hello', bar:'world' }
+          },
+          1,
+          2,
+          3,
+        ];
+
+        const result = await context.OVERRIDE({http_method:'GET'}).return_args_with_request_method_get(...args);
+        assert.deepEqual( result, args );
       } catch ( e ) {
         console.error( 'unexpected exception', e );
         throw new Error( 'error', { cause : e } );

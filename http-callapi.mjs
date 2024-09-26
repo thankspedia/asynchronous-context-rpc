@@ -107,6 +107,31 @@ async function http_callapi_handler( nargs ) {
   }
 
   /*
+   * Convert `method_args` an array into an array-like object.
+   * See parse_query_parameter() in `http-middleware.mjs`
+   *
+   * Thu, 26 Sep 2024 19:03:33 +0900
+   */
+  const method_args_to_entries = (method_args)=>{
+    if ( Array.isArray( method_args ) ) {
+      if ( method_args.length === 0 ) {
+        return [];
+      } else if ( typeof method_args[0] !== 'object' ) {
+        return [];
+      } else {
+
+        const arr = method_args.map( e=>JSON.stringify(e) );
+        return ({
+          ...arr,
+          length :arr.length,
+        });
+      }
+    } else {
+      throw new TypeError(`method_args '${method_args}' is not an array.` );
+    }
+  };
+
+  /*
    * === About `query_obj` variable ===
    *
    * If http_method is either 'HEAD' or 'GET', it only accepts the first
@@ -118,7 +143,7 @@ async function http_callapi_handler( nargs ) {
   const create_fetch_options_and_query = ()=>{
     if ( http_method === 'HEAD' || http_method === 'GET' ) {
       const fetch_options        = { method:http_method, headers:http_headers };
-      const query_obj = new URLSearchParams( (method_args.lenght === 0) || (typeof method_args[0] !== 'object') ? {} : method_args[0] );
+      const query_obj = new URLSearchParams( method_args_to_entries( method_args ) );
       query_obj.sort();
       const query_string = query_obj.toString();
       return {

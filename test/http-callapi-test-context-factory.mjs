@@ -106,6 +106,16 @@ Hello.defineMethod(
     unprotected_output : true,
   }
 );
+Hello.defineMethod(
+  async function return_args_with_request_method_get(...args) {
+    return args;
+  },
+  METHOD_GET,
+  {
+    unprotected_intput : true,
+    unprotected_output : true,
+  }
+);
 
 
 function createContext() {

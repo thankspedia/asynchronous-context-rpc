@@ -272,10 +272,38 @@ function parse_request_body( text_request_body ) {
 // this doesn't seem to work properly; this is probably not tested.
 // Wed, 03 Jul 2024 16:34:04 +0900
 //
+
+/*
+ * Now http-callapi send all arguments as JSON string; now http-middleware have
+ * responsibility to parse the arguments which are encoded as JSON strings.
+ *
+ * Thu, 26 Sep 2024 18:50:10 +0900
+ */
+
+/*
+ * Now http-callapi must send all arguments as an array-like object.
+ * See method_args_to_entries() in `http-callapi.mjs`.
+ *
+ * Thu, 26 Sep 2024 19:03:33 +0900
+ */
 function parse_query_parameter( query ) {
   const p = new URLSearchParams( query );
   p.sort();
-  return [ Object.fromEntries( p.entries() ) ];
+  // return [ Object.fromEntries( p.entries() ) ];
+  return (
+    Array.from(
+      Object.fromEntries(
+        p.entries().map(e=>{
+          return (
+            [
+              ( e[0] ),
+              JSON.parse( e[1] ),
+            ]
+          );
+        })
+      )
+    )
+  );
 }
 
 
