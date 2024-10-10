@@ -17,7 +17,7 @@ export const METHOD_PATCH    = 'PATCH';
 export const MSG_SUCCEEDED   = 'succeeded';
 export const MSG_ERROR       = 'error';
 
-
+export const SYM_RESPONSE_OVERRIDER = Symbol.for( 'SYM_RESPONSE_OVERRIDER' );
 
 export const create_console_options = ()=>({
   ignoreErrors : true,
@@ -522,7 +522,31 @@ function __create_middleware( contextFactory ) {
             } else {
               // Otherwise let it treat as the default does.
               output_log( 'SUC', 'SCODE03', {...logging} );
+
+              /*
+               * TODO DOCUMENT THIS!!!
+               *
+               * if the symbol SYM_RESPONSE_OVERRIDER is set to the result
+               * object, take that value as a function to override response
+               * properties of Express object.
+               *
+               * (Thu, 10 Oct 2024 17:24:29 +0900)
+               */
+              if ( SYM_RESPONSE_OVERRIDER in respapi_result.value ) {
+                const overrider = respapi_result.value[SYM_RESPONSE_OVERRIDER];
+                if ( typeof overrider === 'function'  ) {
+                  try {
+                    overrider( res );
+                  } catch ( e ) {
+                    console.warn( 'overrider threw an error' ) ;
+                  }
+                } else {
+                  console.warn( 'overrider was not a function' ) ;
+                }
+              }
+
               res.status( 200 ).json( createSuccessful( respapi_result.value ) ).end();
+
               done = true;
             }
             return;
