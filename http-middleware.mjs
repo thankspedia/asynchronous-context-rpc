@@ -532,7 +532,11 @@ function __create_middleware( contextFactory ) {
                *
                * (Thu, 10 Oct 2024 17:24:29 +0900)
                */
-              if ( SYM_RESPONSE_OVERRIDER in respapi_result.value ) {
+              if (
+                typeof(respapi_result.value)==='object' &&         // the value is object
+                ( !! respapi_result.value ) &&                     // the value is NOT a nullish value
+                ( SYM_RESPONSE_OVERRIDER in respapi_result.value ) // then, check the property which name is a symbol.
+              ) {
                 const overrider = respapi_result.value[SYM_RESPONSE_OVERRIDER];
                 if ( typeof overrider === 'function'  ) {
                   try {
