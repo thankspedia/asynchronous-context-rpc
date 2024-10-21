@@ -91,7 +91,7 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.0.0-beta.1",
+    "express": "5.0.0-beta.3",
     "morgan": "^1.10.0",
     "npm": "^10.2.4",
     "ws": "^8.13.0"
