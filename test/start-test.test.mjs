@@ -96,7 +96,6 @@ describe( 'it as', async ()=>{
   });
 
   await it('as test1',{skip:false}, async()=>{
-    debugger;
     const context = createContext();
     assert.equal( await ( context.hello_world( 'hello world !!' ) ) , 'hello world !!' );
   });
