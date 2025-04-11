@@ -54,11 +54,29 @@ await describe( 'http-callapi test',{only:true,skip:false}, async ()=>{
   await before( async ()=>{
     console.warn('BEFORE');
     try {
-      service = spawn( 'start-http-middleware-service', {
-        // detached:true,
-        shell:false,
-        env: Object.assign({},process.env,{})
-      });
+      console.log( 'env', process.env );
+      service = spawn( 'start-service',
+        [ 'run-all' ],
+        {
+          // detached:true,
+          shell:false,
+          env: Object.assign(
+            {},
+            process.env,
+            {
+              /*
+               * This is actually not necessary because filenameOfSettings()
+               * function sets SETTINGS environment variable. This environment
+               * variable setting effectively reflects to environment variables
+               * in the server process.
+               *
+               * (Fri, 11 Apr 2025 21:13:24 +0900)
+               */
+              SETTINGS : './http-callapi-test.settings.json'
+            }
+          )
+        }
+      );
       service.stdout.on('data', (data)=>{
         console.log( data.toString().trim().replaceAll( /^/gm, STDOUT_LOG_ID ) );
       });
