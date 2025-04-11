@@ -64,9 +64,12 @@
     "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test"                    : "./examples/async-context-rpc-example/backend/ws-frontend-respapi-test.js"
   },
   "bin": {
-    "start-http-middleware-service": "bin/start-http-middleware-service.mjs",
-    "start-ws-service": "bin/start-ws-service.mjs",
     "start-service": "bin/start-service.mjs"
+  },
+  "bin" : {
+    "start-ws-service": "bin/start-ws-service.mjs",
+    "start-http-middleware-service": "bin/start-http-middleware-service.mjs",
+    "end":true
   },
   "scripts": {
     "start-frontend-test": "node -r ./ws-backend-respapi.init.js --inspect -e \"require('asynchronous-context-rpc' ).startService() \"",

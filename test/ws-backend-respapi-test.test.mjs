@@ -47,7 +47,7 @@ describe( 'http-middleware-test', async ()=>{
   await before( async ()=>{
     console.warn( LOG_ID, 'BEFORE');
     try {
-      service = spawn( 'start-ws-service', {
+      service = spawn( 'start-service', {
         // detached:true,
         shell:false,
         env: Object.assign({},process.env,{})

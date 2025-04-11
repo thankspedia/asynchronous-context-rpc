@@ -30,7 +30,7 @@ describe( async ()=>{
   await before( async ()=>{
     console.warn('BEFORE');
     try {
-      service = spawn( 'start-ws-service', {
+      service = spawn( 'start-service', {
         // detached:true,
         shell:false,
         env: Object.assign({},process.env,{})

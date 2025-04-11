@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Hello } from './ws.js';
-import { useWebSocketContext } from 'asynchronous-context-rpc/ws-reconnector';
+import { useWebSocketContext } from 'ws-tether/ws-reconnector';
 // import {hello} from './hello.mjs';
 
 

@@ -208,11 +208,11 @@ export const tether_default_configs_of_ws_frontend_respapi = {
         logger    : this.frontend_context.logger,
       });
 
-      if ( DEBUG ) console.log( '[ws-reconnector] proc 2' , backend_context );
+      if ( DEBUG ) console.log( '[ws-tether] proc 2' , backend_context );
 
       this.backend_context = backend_context;
 
-      if ( DEBUG ) console.log( '[ws-reconnector] proc 3' , this.frontend_context );
+      if ( DEBUG ) console.log( '[ws-tether] proc 3' , this.frontend_context );
 
       this.frontend_context.backend   = this.backend_context;
       this.frontend_context.websocket = this.current_websocket;
@@ -235,7 +235,7 @@ export const tether_default_configs_of_ws_frontend_respapi = {
       //   console.error(e);
       // }
     } catch ( e ){
-      console.error( 'ws-reconnector.proc() error' , e );
+      console.error( 'ws-tether.proc() error' , e );
     }
   },
 

@@ -12,7 +12,7 @@
     "ws-frontend-respapi-test" :                    "ws-frontend-respapi-test.js"
   },
   "scripts": {
-    "start" : "SETTINGS='ws-frontend-respapi-test.settings.json' start-ws-service",
+    "start" : "SETTINGS='ws-frontend-respapi-test.settings.json' start-service",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Atsushi Oka",
